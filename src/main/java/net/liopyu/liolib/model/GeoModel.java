@@ -14,10 +14,10 @@ import net.liopyu.liolib.cache.object.GeoBone;
 import net.liopyu.liolib.constant.DataTickets;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animatable.model.CoreGeoModel;
-import net.liopyu.liolib.core.animation.Animation;
 import net.liopyu.liolib.core.animation.AnimatableManager;
-import net.liopyu.liolib.core.animation.AnimationState;
+import net.liopyu.liolib.core.animation.Animation;
 import net.liopyu.liolib.core.animation.AnimationProcessor;
+import net.liopyu.liolib.core.animation.AnimationState;
 import net.liopyu.liolib.core.molang.MolangParser;
 import net.liopyu.liolib.core.molang.MolangQueries;
 import net.liopyu.liolib.core.object.DataTicket;
@@ -179,7 +179,7 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 
 		if (animatable instanceof Entity entity) {
 			parser.setMemoizedValue(MolangQueries.DISTANCE_FROM_CAMERA, () -> mc.gameRenderer.getMainCamera().getPosition().distanceTo(entity.position()));
-			parser.setMemoizedValue(MolangQueries.IS_ON_GROUND, () -> RenderUtils.booleanToFloat(entity.isOnGround()));
+			parser.setMemoizedValue(MolangQueries.IS_ON_GROUND, () -> RenderUtils.booleanToFloat(entity.onGround()));
 			parser.setMemoizedValue(MolangQueries.IS_IN_WATER, () -> RenderUtils.booleanToFloat(entity.isInWater()));
 			parser.setMemoizedValue(MolangQueries.IS_IN_WATER_OR_RAIN, () -> RenderUtils.booleanToFloat(entity.isInWaterRainOrBubble()));
 

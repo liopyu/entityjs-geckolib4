@@ -1,5 +1,6 @@
 package net.liopyu.example.client.model.entity;
 
+import net.liopyu.liolib.LioLib;
 import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.entity.DynamicExampleEntity;
 import net.liopyu.liolib.LioLib;

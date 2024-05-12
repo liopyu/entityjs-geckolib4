@@ -261,7 +261,7 @@ public class AnimationProcessor<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * {@link Animation} and {@link Animation.LoopType} override pair,
+	 * {@link Animation} and {@link net.liopyu.liolib.core.animation.Animation.LoopType} override pair,
 	 * used to define a playable animation stage for a {@link GeoAnimatable}
 	 */
 	public record QueuedAnimation(Animation animation, Animation.LoopType loopType) {}

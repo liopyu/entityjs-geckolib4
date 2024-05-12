@@ -1,10 +1,10 @@
 modLoader="javafml"
-loaderVersion="[43,)"
+loaderVersion="[47,)"
 issueTrackerURL="https://github.com/liopyu/liolib"
 license="MIT"
 [[mods]]
 modId="liolib"
-version="1.19-0.0.1"
+version="1.20.1-0.0.1"
 displayName="liolib"
 logoFile="liolib.png"
 credits="Gecko, Eliot, AzureDoom, Chappie, DerToaster, Tslat"
@@ -15,12 +15,12 @@ Liolib is an animation engine for Minecraft Mods, with support for complex 3D ke
 [[dependencies.liolib]]
     modId="forge"
     mandatory=true 
-    versionRange="[43.1.25,)"
+    versionRange="[47.2,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.liolib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19, 1.20)"
+    versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"

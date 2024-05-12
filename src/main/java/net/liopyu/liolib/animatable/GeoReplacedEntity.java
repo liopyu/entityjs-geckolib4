@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * The {@link GeoAnimatable} interface specific to {@link Entity Entities}.
  * This interface is <u>specifically</u> for entities replacing the rendering of other, existing entities.
- * @see net.liopyu.example.entity.ReplacedCreeperEntity
+ * @see software.bernie.example.entity.ReplacedCreeperEntity
  * @see <a href="https://github.com/bernie-g/geckolib/wiki/Entity-Animations">GeckoLib Wiki - Entity Animations</a>
  */
 public interface GeoReplacedEntity extends SingletonGeoAnimatable {
@@ -46,7 +46,7 @@ public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	 * @param data The data to sync
 	 */
 	default <D> void setAnimData(Entity relatedEntity, SerializableDataTicket<D> dataTicket, D data) {
-		if (relatedEntity.getLevel().isClientSide()) {
+		if (relatedEntity.level().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(relatedEntity.getId()).setData(dataTicket, data);
 		}
 		else {
@@ -62,7 +62,7 @@ public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	 * @param animName The name of animation to trigger. This needs to have been registered with the controller via {@link net.liopyu.liolib.core.animation.AnimationController#triggerableAnim AnimationController.triggerableAnim}
 	 */
 	default void triggerAnim(Entity relatedEntity, @Nullable String controllerName, String animName) {
-		if (relatedEntity.getLevel().isClientSide()) {
+		if (relatedEntity.level().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(relatedEntity.getId()).tryTriggerAnimation(controllerName, animName);
 		}
 		else {

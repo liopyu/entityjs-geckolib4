@@ -1,10 +1,10 @@
 package net.liopyu.liolib.constant;
 
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.liopyu.liolib.LioLib;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stores the default (builtin) {@link DataTicket DataTickets} used in Geckolib.<br>
- * Additionally handles registration of {@link net.liopyu.liolib.network.SerializableDataTicket SerializableDataTickets}
+ * Additionally handles registration of {@link SerializableDataTicket SerializableDataTickets}
  */
 public final class DataTickets {
 	private static final Map<String, SerializableDataTicket<?>> SERIALIZABLE_TICKETS = new ConcurrentHashMap<>();
@@ -32,7 +32,7 @@ public final class DataTickets {
 	public static final DataTicket<EquipmentSlot> EQUIPMENT_SLOT = new DataTicket<>("equipment_slot", EquipmentSlot.class);
 	public static final DataTicket<EntityModelData> ENTITY_MODEL_DATA = new DataTicket<>("entity_model_data", EntityModelData.class);
 	public static final DataTicket<Double> TICK = new DataTicket<>("tick", Double.class);
-	public static final DataTicket<ItemTransforms.TransformType> ITEM_RENDER_PERSPECTIVE = new DataTicket<>("item_render_perspective", ItemTransforms.TransformType.class);
+	public static final DataTicket<ItemDisplayContext> ITEM_RENDER_PERSPECTIVE = new DataTicket<>("item_render_perspective", ItemDisplayContext.class);
 
 	// Builtin serializable tickets
 	// These are not used anywhere by default, but are provided as examples
@@ -52,7 +52,7 @@ public final class DataTickets {
 
 	/**
 	 * Register a {@link SerializableDataTicket} with GeckoLib for handling custom data transmission.<br>
-	 * It is recommended you don't call this directly, and instead call it via {@link net.liopyu.liolib.util.GeckoLibUtil#addDataTicket}
+	 * It is recommended you don't call this directly, and instead call it via {@link GeckoLibUtil#addDataTicket}
 	 * @param ticket The SerializableDataTicket instance to register
 	 * @return The registered instance
 	 */

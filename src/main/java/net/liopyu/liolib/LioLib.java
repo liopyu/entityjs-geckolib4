@@ -4,8 +4,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.liopyu.liolib.network.GeckoLibNetwork;
 import net.liopyu.liolib.cache.GeckoLibCache;
+import net.liopyu.liolib.network.GeckoLibNetwork;
 
 /**
  * Base class for LioLib!<br>
@@ -21,7 +21,7 @@ public class LioLib {
 
 	/**
 	 * This method <u><b>MUST</b></u> be called in your mod's constructor or during {@code onInitializeClient} in Fabric/Quilt.<br>
-	 * If shadowing {@code GeckoLib}, you should instead call {@link GeckoLib#shadowInit}
+	 * If shadowing {@code LioLib}, you should instead call {@link LioLib#shadowInit}
 	 * Note that doing so will prevent {@link net.liopyu.liolib.renderer.GeoItemRenderer Items} from animating properly
 	 */
 	synchronized public static void initialize() {
@@ -34,7 +34,7 @@ public class LioLib {
 	}
 
 	/**
-	 * Call this method instead of {@link GeckoLib#initialize} if you are shadowing the mod.
+	 * Call this method instead of {@link LioLib#initialize} if you are shadowing the mod.
 	 */
 	synchronized public static void shadowInit() {
 		if (!hasInitialized)

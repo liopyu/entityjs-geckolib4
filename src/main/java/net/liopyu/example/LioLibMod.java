@@ -5,45 +5,36 @@
 
 package net.liopyu.example;
 
-import net.liopyu.liolib.LioLib;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.liopyu.example.registry.*;
+import net.liopyu.liolib.LioLib;
 
 @EventBusSubscriber
 @Mod(LioLib.MOD_ID)
 public final class LioLibMod {
-	public static CreativeModeTab geckolibItemGroup;
-	public static final String DISABLE_EXAMPLES_PROPERTY_KEY = "liolib.disable_examples";
+	public static final String DISABLE_EXAMPLES_PROPERTY_KEY = "geckolib.disable_examples";
 
 	public LioLibMod() {
 		LioLib.initialize();
 
 		if (shouldRegisterExamples()) {
 			IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
 			EntityRegistry.ENTITIES.register(bus);
 			ItemRegistry.ITEMS.register(bus);
+			ItemRegistry.TABS.register(bus);
 			BlockEntityRegistry.TILES.register(bus);
 			BlockRegistry.BLOCKS.register(bus);
 			SoundRegistry.SOUNDS.register(bus);
-			geckolibItemGroup = new CreativeModeTab(CreativeModeTab.getGroupCountSafe(), "liolib") {
-				@Override
-				public ItemStack makeIcon() {
-					return new ItemStack(ItemRegistry.JACK_IN_THE_BOX.get());
-				}
-			};
 		}
 	}
 
-
-
 	/**
-	 * By default, liolib will register and activate several example entities,
+	 * By default, GeckoLib will register and activate several example entities,
 	 * items, and blocks when in dev.<br>
 	 * These examples are <u>not</u> present when in a production environment
 	 * (normal players).<br>

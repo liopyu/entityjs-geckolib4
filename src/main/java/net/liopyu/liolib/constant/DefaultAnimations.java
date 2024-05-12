@@ -87,7 +87,7 @@ public final class DefaultAnimations {
 
 	/**
 	 * Generic {@link DefaultAnimations#SPAWN spawn} controller.<br>
-	 * Plays the spawn animation as long as the current {@link GeoAnimatable#getTick tick} of the animatable is <= the value provided in {@code ticks}.<br>
+	 * Plays the spawn animation as long as the current {@link GeoAnimatable#getTick tick} of the animatable is {@literal <=} the value provided in {@code ticks}.<br>
 	 * For the {@code objectSupplier}, provide the relevant object for the animatable being animated.
 	 * Recommended:
 	 * <ul>
@@ -125,7 +125,7 @@ public final class DefaultAnimations {
 
 	/**
 	 * Generic attack controller.<br>
-	 * Plays an attack animation if the animatable is {@link net.minecraft.world.entity.LivingEntity#swinging}.<br>
+	 * Plays an attack animation if the animatable is {@link LivingEntity#swinging}.<br>
 	 * Resets the animation each time it stops, ready for the next swing
 	 * @param animatable The entity that should swing
 	 * @param attackAnimation The attack animation to play (E.G. swipe, strike, stomp, swing, etc)

@@ -15,15 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.liopyu.example.client.renderer.block.FertilizerBlockRenderer;
 import net.liopyu.example.client.renderer.block.GeckoHabitatBlockRenderer;
-import net.liopyu.example.client.renderer.entity.BatRenderer;
-import net.liopyu.example.client.renderer.entity.BikeRenderer;
-import net.liopyu.example.client.renderer.entity.CoolKidRenderer;
-import net.liopyu.example.client.renderer.entity.FakeGlassRenderer;
-import net.liopyu.example.client.renderer.entity.GremlinRenderer;
-import net.liopyu.example.client.renderer.entity.MutantZombieRenderer;
-import net.liopyu.example.client.renderer.entity.ParasiteRenderer;
-import net.liopyu.example.client.renderer.entity.RaceCarRenderer;
-import net.liopyu.example.client.renderer.entity.ReplacedCreeperRenderer;
+import net.liopyu.example.client.renderer.entity.*;
 import net.liopyu.example.registry.BlockEntityRegistry;
 import net.liopyu.example.registry.BlockRegistry;
 import net.liopyu.example.registry.EntityRegistry;
@@ -31,7 +23,6 @@ import net.liopyu.liolib.LioLib;
 
 @Mod.EventBusSubscriber(modid = LioLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientListener {
-
 	@SubscribeEvent
 	public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
 		if (LioLibMod.shouldRegisterExamples()) {

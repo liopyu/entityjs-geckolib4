@@ -3,9 +3,20 @@ package net.liopyu.liolib.animatable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import net.liopyu.liolib.cache.AnimatableIdCache;
+import net.liopyu.liolib.constant.DataTickets;
+import net.liopyu.liolib.core.animatable.GeoAnimatable;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
+import net.liopyu.liolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import net.liopyu.liolib.core.animation.AnimatableManager;
+import net.liopyu.liolib.core.animation.ContextAwareAnimatableManager;
 import net.liopyu.liolib.util.RenderUtils;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * The {@link net.liopyu.liolib.core.animatable.GeoAnimatable GeoAnimatable} interface specific to {@link net.minecraft.world.item.Item Items}.
@@ -17,7 +28,7 @@ public interface GeoItem extends SingletonGeoAnimatable {
 	static final String ID_NBT_KEY = "GeckoLibID";
 
 	/**
-	 * Gets the unique identifying number from this ItemStack's {@link net.minecraft.nbt.Tag NBT},
+	 * Gets the unique identifying number from this ItemStack's {@link Tag NBT},
 	 * or {@link Long#MAX_VALUE} if one hasn't been assigned
 	 */
 	static long getId(ItemStack stack) {
@@ -30,7 +41,7 @@ public interface GeoItem extends SingletonGeoAnimatable {
 	}
 
 	/**
-	 * Gets the unique identifying number from this ItemStack's {@link net.minecraft.nbt.Tag NBT}.<br>
+	 * Gets the unique identifying number from this ItemStack's {@link Tag NBT}.<br>
 	 * If no ID has been reserved for this stack yet, it will reserve a new id and assign it
 	 */
 	static long getOrAssignId(ItemStack stack, ServerLevel level) {
@@ -56,5 +67,63 @@ public interface GeoItem extends SingletonGeoAnimatable {
 	@Override
 	default double getTick(Object itemStack) {
 		return RenderUtils.getCurrentTick();
+	}
+
+	/**
+	 * Whether this item animatable is perspective aware, handling animations differently depending on the {@link ItemDisplayContext render perspective}
+	 */
+	default boolean isPerspectiveAware() {
+		return false;
+	}
+
+	/**
+	 * Replaces the default AnimatableInstanceCache for GeoItems if {@link GeoItem#isPerspectiveAware()} is true, for perspective-dependent handling
+	 */
+	@Nullable
+	@Override
+	default AnimatableInstanceCache animatableCacheOverride() {
+		if (isPerspectiveAware())
+			return new ContextBasedAnimatableInstanceCache(this);
+
+		return SingletonGeoAnimatable.super.animatableCacheOverride();
+	}
+
+	/**
+	 * AnimatableInstanceCache specific to GeoItems, for doing render perspective based animations
+	 */
+	class ContextBasedAnimatableInstanceCache extends SingletonAnimatableInstanceCache {
+		public ContextBasedAnimatableInstanceCache(GeoAnimatable animatable) {
+			super(animatable);
+		}
+
+		/**
+		 * Gets an {@link AnimatableManager} instance from this cache, cached under the id provided, or a new one if one doesn't already exist.<br>
+		 * This subclass assumes that all animatable instances will be sharing this cache instance, and so differentiates data by ids.
+		 */
+		@Override
+		public AnimatableManager<?> getManagerForId(long uniqueId) {
+			if (!this.managers.containsKey(uniqueId))
+				this.managers.put(uniqueId, new ContextAwareAnimatableManager<GeoItem, ItemDisplayContext>(this.animatable) {
+					@Override
+					protected Map<ItemDisplayContext, AnimatableManager<GeoItem>> buildContextOptions(GeoAnimatable animatable) {
+						Map<ItemDisplayContext, AnimatableManager<GeoItem>> map = new EnumMap<>(ItemDisplayContext.class);
+
+						for (ItemDisplayContext context : ItemDisplayContext.values()) {
+							map.put(context, new AnimatableManager<>(animatable));
+						}
+
+						return map;
+					}
+
+					@Override
+					public ItemDisplayContext getCurrentContext() {
+						ItemDisplayContext context = getData(DataTickets.ITEM_RENDER_PERSPECTIVE);
+
+						return context == null ? ItemDisplayContext.NONE : context;
+					}
+				});
+
+			return this.managers.get(uniqueId);
+		}
 	}
 }

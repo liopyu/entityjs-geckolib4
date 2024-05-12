@@ -43,7 +43,7 @@ import java.util.Map;
 
 /**
  * Builtin class for handling dynamic armor rendering on GeckoLib entities.<br>
- * Supports both {@link net.liopyu.liolib.animatable.GeoItem GeckoLib} and {@link net.minecraft.world.item.ArmorItem Vanilla} armor models.<br>
+ * Supports both {@link GeoItem GeckoLib} and {@link ArmorItem Vanilla} armor models.<br>
  * Unlike a traditional armor renderer, this renderer renders per-bone, giving much more flexible armor rendering.
  */
 public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends GeoRenderLayer<T> {
@@ -145,7 +145,6 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 				if (model instanceof GeoArmorRenderer<?> geoArmorRenderer) {
 					prepModelPartForRender(poseStack, bone, modelPart);
 					geoArmorRenderer.prepForRender(animatable, armorStack, slot, model);
-					geoArmorRenderer.setAllVisible(false);
 					geoArmorRenderer.applyBoneVisibilityByPart(slot, modelPart, model);
 					geoArmorRenderer.renderToBuffer(poseStack, null, packedLight, packedOverlay, 1, 1, 1, 1);
 				}
@@ -203,7 +202,7 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 	protected HumanoidModel<?> getModelForItem(GeoBone bone, EquipmentSlot slot, ItemStack stack, T animatable) {
 		HumanoidModel<?> defaultModel = slot == EquipmentSlot.LEGS ? INNER_ARMOR_MODEL : OUTER_ARMOR_MODEL;
 
-		return IClientItemExtensions.of(stack).getHumanoidArmorModel(null, stack, null, defaultModel);
+		return IClientItemExtensions.of(stack).getHumanoidArmorModel(animatable, stack, slot, defaultModel);
 	}
 
 	/**

@@ -5,14 +5,12 @@
 
 package net.liopyu.liolib.core.keyframe;
 
-import net.liopyu.liolib.core.animation.AnimationController;
-
 import java.io.Serial;
 import java.util.LinkedList;
 
 /**
  * An {@link AnimationPoint} queue holds a queue of {@code AnimationPoints} which are used in
- * the {@link AnimationController} to lerp between values
+ * the {@link net.liopyu.liolib.core.animation.AnimationController} to lerp between values
  */
 public final class AnimationPointQueue extends LinkedList<AnimationPoint> {
 	@Serial

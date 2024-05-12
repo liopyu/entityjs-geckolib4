@@ -7,16 +7,15 @@ package net.liopyu.liolib.core.keyframe;
 
 import net.liopyu.liolib.core.animatable.model.CoreGeoBone;
 import net.liopyu.liolib.core.state.BoneSnapshot;
-import net.liopyu.liolib.core.animation.AnimationController;
 
 /**
  * A bone pseudo-stack for bone animation positions, scales, and rotations.
  * Animation points are calculated then pushed onto their respective queues to be used for transformations in rendering
  */
 public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationXQueue, AnimationPointQueue rotationYQueue,
-                                 AnimationPointQueue rotationZQueue, AnimationPointQueue positionXQueue, AnimationPointQueue positionYQueue,
-                                 AnimationPointQueue positionZQueue, AnimationPointQueue scaleXQueue, AnimationPointQueue scaleYQueue,
-                                 AnimationPointQueue scaleZQueue) {
+								 AnimationPointQueue rotationZQueue, AnimationPointQueue positionXQueue, AnimationPointQueue positionYQueue,
+								 AnimationPointQueue positionZQueue, AnimationPointQueue scaleXQueue, AnimationPointQueue scaleYQueue,
+								 AnimationPointQueue scaleZQueue) {
 	public BoneAnimationQueue(CoreGeoBone bone) {
 		this(bone, new AnimationPointQueue(), new AnimationPointQueue(), new AnimationPointQueue(),
 				new AnimationPointQueue(), new AnimationPointQueue(), new AnimationPointQueue(),
@@ -27,7 +26,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#positionXQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -39,7 +38,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#positionYQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -51,7 +50,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#positionZQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -63,7 +62,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new X, Y, and Z position {@link AnimationPoint} to their respective queues
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (base on the {@link AnimationController}
+	 * @param transitionLength The length of the transition (base on the {@link net.liopyu.liolib.core.animation.AnimationController}
 	 * @param startSnapshot The {@link BoneSnapshot} that serves as the starting positions relevant to the keyframe provided
 	 * @param nextXPoint The X {@code AnimationPoint} that is next in the queue, to serve as the end value of the new point
 	 * @param nextYPoint The Y {@code AnimationPoint} that is next in the queue, to serve as the end value of the new point
@@ -79,7 +78,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#scaleXQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -91,7 +90,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#scaleYQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -103,7 +102,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#scaleZQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -115,7 +114,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new X, Y, and Z scale {@link AnimationPoint} to their respective queues
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (base on the {@link AnimationController}
+	 * @param transitionLength The length of the transition (base on the {@link net.liopyu.liolib.core.animation.AnimationController}
 	 * @param startSnapshot The {@link BoneSnapshot} that serves as the starting scales relevant to the keyframe provided
 	 * @param nextXPoint The X {@code AnimationPoint} that is next in the queue, to serve as the end value of the new point
 	 * @param nextYPoint The Y {@code AnimationPoint} that is next in the queue, to serve as the end value of the new point
@@ -131,7 +130,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#rotationXQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -143,7 +142,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#rotationYQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -155,7 +154,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new {@link AnimationPoint} to the {@link BoneAnimationQueue#rotationZQueue}
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (based on the {@link AnimationController})
+	 * @param transitionLength The length of the transition (based on the {@link net.liopyu.liolib.core.animation.AnimationController})
 	 * @param startValue The value of the point at the start of its transition
 	 * @param endValue The value of the point at the end of its transition
 	 */
@@ -167,7 +166,7 @@ public record BoneAnimationQueue(CoreGeoBone bone, AnimationPointQueue rotationX
 	 * Add a new X, Y, and Z scale {@link AnimationPoint} to their respective queues
 	 * @param keyFrame The {@code Nullable} Keyframe relevant to the animation point
 	 * @param lerpedTick The lerped time (current tick + partial tick) that the point starts at
-	 * @param transitionLength The length of the transition (base on the {@link AnimationController}
+	 * @param transitionLength The length of the transition (base on the {@link net.liopyu.liolib.core.animation.AnimationController}
 	 * @param startSnapshot The {@link BoneSnapshot} that serves as the starting rotations relevant to the keyframe provided
 	 * @param initialSnapshot The {@link BoneSnapshot} that serves as the unmodified rotations of the bone
 	 * @param nextXPoint The X {@code AnimationPoint} that is next in the queue, to serve as the end value of the new point

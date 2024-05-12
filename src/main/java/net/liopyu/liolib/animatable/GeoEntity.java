@@ -12,7 +12,7 @@ import net.liopyu.liolib.network.packet.EntityAnimTriggerPacket;
 import javax.annotation.Nullable;
 
 /**
- * The {@link GeoAnimatable} interface specific to {@link net.minecraft.world.entity.Entity Entities}.
+ * The {@link GeoAnimatable} interface specific to {@link Entity Entities}.
  * This also applies to Projectiles and other Entity subclasses.<br>
  * <b>NOTE:</b> This <u>cannot</u> be used for entities using the {@link net.liopyu.liolib.renderer.GeoReplacedEntityRenderer}
  * as you aren't extending {@code Entity}. Use {@link GeoReplacedEntity} instead.
@@ -40,7 +40,7 @@ public interface GeoEntity extends GeoAnimatable {
 	default <D> void setAnimData(SerializableDataTicket<D> dataTicket, D data) {
 		Entity entity = (Entity)this;
 
-		if (entity.getLevel().isClientSide()) {
+		if (entity.level().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(entity.getId()).setData(dataTicket, data);
 		}
 		else {
@@ -57,7 +57,7 @@ public interface GeoEntity extends GeoAnimatable {
 	default void triggerAnim(@Nullable String controllerName, String animName) {
 		Entity entity = (Entity)this;
 
-		if (entity.getLevel().isClientSide()) {
+		if (entity.level().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(entity.getId()).tryTriggerAnimation(controllerName, animName);
 		}
 		else {

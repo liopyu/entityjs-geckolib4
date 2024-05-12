@@ -203,7 +203,7 @@ public class AnimationController<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Tells the AnimationController that you want to receive the {@link AnimationController.AnimationStateHandler}
+	 * Tells the AnimationController that you want to receive the {@link AnimationStateHandler}
 	 * while a triggered animation is playing.<br>
 	 * <br>
 	 * This has no effect if no triggered animation has been registered, or one isn't currently playing.<br>
@@ -275,10 +275,21 @@ public class AnimationController<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Overrides the animation transition time for the controller
+	 * Overrides the animation transition time for the controller<br>
+	 * Deprecated, use {@link AnimationController#transitionLength(int)}
 	 */
+	@Deprecated(forRemoval = true)
 	public void setTransitionLength(int ticks) {
 		this.transitionLength = ticks;
+	}
+
+	/**
+	 * Overrides the animation transition time for the controller
+	 */
+	public AnimationController<T> transitionLength(int ticks) {
+		setTransitionLength(ticks);
+
+		return this;
 	}
 
 	/**
@@ -419,6 +430,9 @@ public class AnimationController<T extends GeoAnimatable> {
 		if (this.justStartedTransition && (this.shouldResetTick || this.justStopped)) {
 			this.justStopped = false;
 			adjustedTick = adjustTick(seekTime);
+
+			if (this.currentAnimation == null)
+				this.animationState = State.TRANSITIONING;
 		}
 		else if (this.currentAnimation == null) {
 			this.shouldResetTick = true;
@@ -462,6 +476,9 @@ public class AnimationController<T extends GeoAnimatable> {
 
 						continue;
 					}
+
+					if (boneSnapshot == null)
+						continue;
 
 					KeyframeStack<Keyframe<IValue>> rotationKeyFrames = boneAnimation.rotationKeyFrames();
 					KeyframeStack<Keyframe<IValue>> positionKeyFrames = boneAnimation.positionKeyFrames();
@@ -521,7 +538,8 @@ public class AnimationController<T extends GeoAnimatable> {
 				else {
 					this.animationState = State.TRANSITIONING;
 					this.shouldResetTick = true;
-					this.currentAnimation = nextAnimation;
+					adjustedTick = adjustTick(seekTime);
+					this.currentAnimation = this.animationQueue.poll();
 				}
 			}
 		}
@@ -621,7 +639,7 @@ public class AnimationController<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Cache the relevant {@link BoneSnapshot BoneSnapshots} for the current {@link AnimationProcessor.QueuedAnimation}
+	 * Cache the relevant {@link BoneSnapshot BoneSnapshots} for the current {@link net.liopyu.liolib.core.animation.AnimationProcessor.QueuedAnimation}
 	 * for animation lerping
 	 * @param animation The {@code QueuedAnimation} to filter {@code BoneSnapshots} for
 	 * @param snapshots The master snapshot collection to pull filter from

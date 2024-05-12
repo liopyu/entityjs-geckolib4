@@ -35,21 +35,21 @@ import java.util.function.Function;
  * and {@link CoreGeoModel Models}
  */
 public final class GeckoLibCache {
-	private static final Set<String> EXCLUDED_NAMESPACES = ObjectOpenHashSet.of("azurelib","geckolib3", "animatedmobsmod", "moreplayermodels", "customnpcs", "gunsrpg", "mimic", "celestisynth", "the_flesh_that_hates", "enemyexpansion", "mutationcraft", "dungeons_mobs", "fear_the_dark");
+	private static final Set<String> EXCLUDED_NAMESPACES = ObjectOpenHashSet.of("moreplayermodels", "customnpcs", "gunsrpg");
 
 	private static Map<ResourceLocation, BakedAnimations> ANIMATIONS = Collections.emptyMap();
 	private static Map<ResourceLocation, BakedGeoModel> MODELS = Collections.emptyMap();
 
 	public static Map<ResourceLocation, BakedAnimations> getBakedAnimations() {
 		if (!LioLib.hasInitialized)
-			throw new RuntimeException("LioLib was never initialized! Please read the documentation!");
+			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
 
 		return ANIMATIONS;
 	}
 
 	public static Map<ResourceLocation, BakedGeoModel> getBakedModels() {
 		if (!LioLib.hasInitialized)
-			throw new RuntimeException("LioLib was never initialized! Please read the documentation!");
+			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
 
 		return MODELS;
 	}
@@ -65,7 +65,7 @@ public final class GeckoLibCache {
 		}
 
 		if (!(mc.getResourceManager() instanceof ReloadableResourceManager resourceManager))
-			throw new RuntimeException("LioLib was initialized too early!");
+			throw new RuntimeException("GeckoLib was initialized too early!");
 
 		resourceManager.registerReloadListener(GeckoLibCache::reload);
 	}

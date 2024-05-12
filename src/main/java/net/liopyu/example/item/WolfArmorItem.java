@@ -18,9 +18,9 @@ import net.liopyu.example.registry.ItemRegistry;
 import net.liopyu.liolib.animatable.GeoItem;
 import net.liopyu.liolib.constant.DataTickets;
 import net.liopyu.liolib.constant.DefaultAnimations;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.object.PlayState;
 import net.liopyu.liolib.renderer.GeoArmorRenderer;
 import net.liopyu.liolib.util.GeckoLibUtil;
@@ -36,8 +36,8 @@ import java.util.function.Consumer;
 public final class WolfArmorItem extends ArmorItem implements GeoItem {
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-	public WolfArmorItem(ArmorMaterial armorMaterial, EquipmentSlot slot, Properties properties) {
-		super(armorMaterial, slot, properties);
+	public WolfArmorItem(ArmorMaterial armorMaterial, Type type, Properties properties) {
+		super(armorMaterial, type, properties);
 	}
 
 	// Create our armor model/renderer for forge and return it

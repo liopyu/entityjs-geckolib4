@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
- * Packet for syncing user-definable animations that can be triggered from the server for {@link net.minecraft.world.entity.Entity Entities}
+ * Packet for syncing user-definable animations that can be triggered from the server for {@link Entity Entities}
  */
 public class EntityAnimTriggerPacket<D> {
 	private final int entityId;
@@ -51,13 +51,13 @@ public class EntityAnimTriggerPacket<D> {
 
 			if (entity == null)
 				return;
+
 			if (this.isReplacedEntity) {
 				GeoAnimatable animatable = RenderUtils.getReplacedAnimatable(entity.getType());
 
 				if (animatable instanceof GeoReplacedEntity replacedEntity)
 					replacedEntity.triggerAnim(entity, this.controllerName.isEmpty() ? null : this.controllerName, this.animName);
 			}
-
 			else if (entity instanceof GeoEntity geoEntity) {
 				geoEntity.triggerAnim(this.controllerName.isEmpty() ? null : this.controllerName, this.animName);
 			}

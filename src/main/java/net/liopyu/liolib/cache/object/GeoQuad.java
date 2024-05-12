@@ -1,8 +1,7 @@
 package net.liopyu.liolib.cache.object;
 
-import com.mojang.math.Vector3f;
-
 import net.minecraft.core.Direction;
+import org.joml.Vector3f;
 
 /**
  * Quad data holder
@@ -24,7 +23,8 @@ public record GeoQuad(GeoVertex[] vertices, Vector3f normal, Direction direction
 			float tempWidth = uWidth;
 			uWidth = u;
 			u = tempWidth;
-
+		}
+		else {
 			normal.mul(-1, 1, 1);
 		}
 

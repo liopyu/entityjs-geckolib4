@@ -6,11 +6,10 @@
 package net.liopyu.liolib.core.state;
 
 import net.liopyu.liolib.core.animatable.model.CoreGeoBone;
-import net.liopyu.liolib.core.animation.AnimationProcessor;
 
 /**
  * A state monitoring class for a given {@link CoreGeoBone}.<br>
- * Transformations applied to the bone is monitored by the {@link AnimationProcessor}
+ * Transformations applied to the bone is monitored by the {@link net.liopyu.liolib.core.animation.AnimationProcessor}
  * in the course of animations, and stored here for monitoring.
  */
 public class BoneSnapshot {

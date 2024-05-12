@@ -4,11 +4,10 @@
  */
 package net.liopyu.liolib.core.animatable;
 
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animatable.model.CoreGeoBone;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
-import net.liopyu.liolib.core.animation.AnimationProcessor;
 
 /**
  * This is the root interface for all animatable objects in Geckolib.
@@ -41,7 +40,7 @@ public interface GeoAnimatable {
 	AnimatableInstanceCache getAnimatableInstanceCache();
 
 	/**
-	 * Defines the speed in which the {@link AnimationProcessor} should return
+	 * Defines the speed in which the {@link net.liopyu.liolib.core.animation.AnimationProcessor} should return
 	 * {@link CoreGeoBone GeoBones} that currently have no animations
 	 * to their default position.
 	 */
@@ -64,4 +63,12 @@ public interface GeoAnimatable {
 	 * @return The current tick/age of the animatable, for animation purposes
 	 */
 	double getTick(Object object);
+
+	/**
+	 * Override the default handling for instantiating an AnimatableInstanceCache for this animatable.<br>
+	 * Don't override this unless you know what you're doing.
+	 */
+	default AnimatableInstanceCache animatableCacheOverride() {
+		return null;
+	}
 }

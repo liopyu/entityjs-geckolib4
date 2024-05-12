@@ -1,23 +1,23 @@
 package net.liopyu.liolib.renderer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix4f;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.cache.object.GeoBone;
+import net.liopyu.liolib.cache.texture.AnimatableTexture;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimationState;
 import net.liopyu.liolib.event.GeoRenderEvent;
 import net.liopyu.liolib.model.GeoModel;
 import net.liopyu.liolib.renderer.layer.GeoRenderLayer;
+import net.liopyu.liolib.renderer.layer.GeoRenderLayersContainer;
 import net.liopyu.liolib.util.RenderUtils;
 
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ import java.util.List;
  * It is <b>strongly</b> recommended you override {@link GeoRenderer#getInstanceId} if using this renderer
  */
 public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T> {
-	protected final List<GeoRenderLayer<T>> renderLayers = new ObjectArrayList<>();
+	protected final GeoRenderLayersContainer<T> renderLayers = new GeoRenderLayersContainer<>(this);
 	protected final GeoModel<T> model;
 
 	protected T animatable;
@@ -42,8 +42,6 @@ public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T
 
 	public GeoObjectRenderer(GeoModel<T> model) {
 		this.model = model;
-
-		fireCompileRenderLayersEvent();
 	}
 
 	/**
@@ -76,14 +74,14 @@ public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T
 	 */
 	@Override
 	public List<GeoRenderLayer<T>> getRenderLayers() {
-		return this.renderLayers;
+		return this.renderLayers.getRenderLayers();
 	}
 
 	/**
 	 * Adds a {@link GeoRenderLayer} to this renderer, to be called after the main model is rendered each frame
 	 */
 	public GeoObjectRenderer<T> addRenderLayer(GeoRenderLayer<T> renderLayer) {
-		this.renderLayers.add(renderLayer);
+		this.renderLayers.addLayer(renderLayer);
 
 		return this;
 	}
@@ -120,8 +118,9 @@ public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T
 		this.animatable = animatable;
 		Minecraft mc = Minecraft.getInstance();
 
-		if (buffer == null)
-			bufferSource = mc.renderBuffers().bufferSource();
+		if (buffer == null) {
+            bufferSource = mc.levelRenderer.renderBuffers.bufferSource();
+        }
 
 		defaultRender(poseStack, animatable, bufferSource, renderType, buffer, 0, mc.getFrameTime(), packedLight);
 	}
@@ -161,7 +160,6 @@ public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T
 
 		this.modelRenderTranslations = new Matrix4f(poseStack.last().pose());
 
-		RenderSystem.setShaderTexture(0, getTextureLocation(animatable));
 		GeoRenderer.super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick,
 				packedLight, packedOverlay, red, green, blue, alpha);
 		poseStack.popPose();
@@ -185,13 +183,13 @@ public class GeoObjectRenderer<T extends GeoAnimatable> implements GeoRenderer<T
 	}
 
 	/**
-	 * Scales the {@link PoseStack} in preparation for rendering the model, excluding when re-rendering the model as part of a {@link GeoRenderLayer} or external render call.<br>
-	 * Override and call super with modified scale values as needed to further modify the scale of the model (E.G. child entities)
+	 * Update the current frame of a {@link AnimatableTexture potentially animated} texture used by this GeoRenderer.<br>
+	 * This should only be called immediately prior to rendering, and only
+	 * @see AnimatableTexture#setAndUpdate
 	 */
 	@Override
-	public void scaleModelForRender(float widthScale, float heightScale, PoseStack poseStack, T animatable, BakedGeoModel model, boolean isReRender, float partialTick, int packedLight, int packedOverlay) {
-		if (!isReRender && (widthScale != 1 || heightScale != 1))
-			poseStack.scale(this.scaleWidth, this.scaleHeight, this.scaleWidth);
+	public void updateAnimatedTextureFrame(T animatable) {
+		AnimatableTexture.setAndUpdate(getTextureLocation(animatable));
 	}
 
 	/**

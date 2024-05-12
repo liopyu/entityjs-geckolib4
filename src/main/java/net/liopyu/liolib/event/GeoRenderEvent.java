@@ -100,7 +100,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -142,7 +142,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -232,7 +232,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -274,7 +274,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -365,7 +365,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -407,7 +407,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -497,7 +497,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -539,7 +539,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -622,7 +622,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -664,7 +664,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}
@@ -754,7 +754,7 @@ public interface GeoRenderEvent {
 			public PoseStack getPoseStack() {
 				return this.poseStack;
 			}
-
+			
 			public BakedGeoModel getModel() {
 				return this.model;
 			}

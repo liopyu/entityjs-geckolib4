@@ -59,7 +59,7 @@ public final class JsonUtil {
 	/**
 	 * Converts a {@link JsonArray} of a given object type to an array of that object, deserialized from their respective {@link JsonElement JsonElements}
 	 * @param array The array containing the objects to be converted
-	 * @param context The {@link com.google.gson.Gson} context for deserialization
+	 * @param context The {@link Gson} context for deserialization
 	 * @param objectClass The object type that the array contains
 	 */
 	public static <T> T[] jsonArrayToObjectArray(JsonArray array, JsonDeserializationContext context, Class<T> objectClass) {

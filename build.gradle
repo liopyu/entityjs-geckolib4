@@ -45,7 +45,7 @@ configurations {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: '1.19.2-2022.11.27-1.19.2'
+    mappings channel: 'parchment', version: '1.20.1-2023.09.03-1.20.1'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     runs {
         client {
@@ -108,7 +108,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.2-43.2.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.2.19'
     library 'com.eliotlash.mclib:mclib:20'
 
 }

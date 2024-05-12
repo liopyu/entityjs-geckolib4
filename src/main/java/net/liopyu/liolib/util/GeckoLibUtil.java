@@ -4,11 +4,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.liopyu.liolib.constant.DataTickets;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animation.Animation;
-import net.liopyu.liolib.core.animation.EasingType;
 import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animatable.instance.InstancedAnimatableInstanceCache;
 import net.liopyu.liolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import net.liopyu.liolib.core.animation.Animation;
+import net.liopyu.liolib.core.animation.EasingType;
 import net.liopyu.liolib.loading.object.BakedModelFactory;
 import net.liopyu.liolib.network.SerializableDataTicket;
 
@@ -21,7 +21,9 @@ public final class GeckoLibUtil {
 	 * @param animatable The animatable object
 	 */
 	public static AnimatableInstanceCache createInstanceCache(GeoAnimatable animatable) {
-		return createInstanceCache(animatable, !(animatable instanceof Entity) && !(animatable instanceof BlockEntity));
+		AnimatableInstanceCache cache = animatable.animatableCacheOverride();
+
+		return cache != null ? cache : createInstanceCache(animatable, !(animatable instanceof Entity) && !(animatable instanceof BlockEntity));
 	}
 
 	/**
@@ -31,6 +33,11 @@ public final class GeckoLibUtil {
 	 * @param singletonObject Whether the object is a singleton/flyweight object, and uses ints to differentiate animatable instances
 	 */
 	public static AnimatableInstanceCache createInstanceCache(GeoAnimatable animatable, boolean singletonObject) {
+		AnimatableInstanceCache cache = animatable.animatableCacheOverride();
+
+		if (cache != null)
+			return cache;
+
 		return singletonObject ? new SingletonAnimatableInstanceCache(animatable) : new InstancedAnimatableInstanceCache(animatable);
 	}
 

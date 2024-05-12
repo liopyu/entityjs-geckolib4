@@ -2,13 +2,14 @@ package net.liopyu.example.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.liopyu.example.client.model.entity.GremlinModel;
@@ -19,7 +20,6 @@ import net.liopyu.liolib.cache.object.GeoBone;
 import net.liopyu.liolib.renderer.DynamicGeoEntityRenderer;
 import net.liopyu.liolib.renderer.layer.BlockAndItemGeoLayer;
 import net.liopyu.liolib.renderer.layer.ItemArmorGeoLayer;
-import com.mojang.math.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * Example {@link DynamicGeoEntityRenderer} implementation
  * @see DynamicExampleEntity
  */
-public class GremlinRenderer extends DynamicGeoEntityRenderer<DynamicExampleEntity> {
+public class 	GremlinRenderer extends DynamicGeoEntityRenderer<DynamicExampleEntity> {
 	// Pre-define our bone names for easy and consistent reference later
 	private static final String LEFT_HAND = "bipedHandLeft";
 	private static final String RIGHT_HAND = "bipedHandRight";
@@ -111,11 +111,11 @@ public class GremlinRenderer extends DynamicGeoEntityRenderer<DynamicExampleEnti
 			}
 
 			@Override
-			protected TransformType getTransformTypeForStack(GeoBone bone, ItemStack stack, DynamicExampleEntity animatable) {
+			protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, DynamicExampleEntity animatable) {
 				// Apply the camera transform for the given hand
 				return switch (bone.getName()) {
-					case LEFT_HAND, RIGHT_HAND -> TransformType.THIRD_PERSON_RIGHT_HAND;
-					default -> TransformType.NONE;
+					case LEFT_HAND, RIGHT_HAND -> ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+					default -> ItemDisplayContext.NONE;
 				};
 			}
 
@@ -124,17 +124,17 @@ public class GremlinRenderer extends DynamicGeoEntityRenderer<DynamicExampleEnti
 			protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, DynamicExampleEntity animatable,
 											  MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
 				if (stack == GremlinRenderer.this.mainHandItem) {
-					poseStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+					poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
 
 					if (stack.getItem() instanceof ShieldItem)
 						poseStack.translate(0, 0.125, -0.25);
 				}
 				else if (stack == GremlinRenderer.this.offhandItem) {
-					poseStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+					poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
 
 					if (stack.getItem() instanceof ShieldItem) {
 						poseStack.translate(0, 0.125, 0.25);
-						poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+						poseStack.mulPose(Axis.YP.rotationDegrees(180));
 					}
 				}
 

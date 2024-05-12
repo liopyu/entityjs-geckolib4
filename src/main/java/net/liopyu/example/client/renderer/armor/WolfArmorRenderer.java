@@ -1,5 +1,6 @@
 package net.liopyu.example.client.renderer.armor;
 
+import net.liopyu.liolib.LioLib;
 import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.item.WolfArmorItem;
 import net.liopyu.liolib.LioLib;
