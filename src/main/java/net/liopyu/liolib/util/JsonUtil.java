@@ -9,7 +9,6 @@ import net.liopyu.liolib.loading.json.raw.*;
 import net.liopyu.liolib.loading.json.typeadapter.BakedAnimationsAdapter;
 import net.liopyu.liolib.loading.json.typeadapter.KeyFramesAdapter;
 import net.liopyu.liolib.loading.object.BakedAnimations;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -43,7 +42,7 @@ public final class JsonUtil {
 	 * No type checking is done, so if the array contains anything other than doubles, this will throw an exception.<br>
 	 * Ensures a minimum size of 3, as this is the expected usage of this method
 	 */
-	public static double[] jsonArrayToDoubleArray(@Nullable JsonArray array) throws JsonParseException {
+	public static double[] jsonArrayToDoubleArray( JsonArray array) throws JsonParseException {
 		if (array == null)
 			return new double[3];
 
@@ -77,7 +76,7 @@ public final class JsonUtil {
 	 * @param array The {@code JsonArray} to convert
 	 * @param elementTransformer Transformation function that converts a {@link JsonElement} to the intended output object
 	 */
-	public static <T> List<T> jsonArrayToList(@Nullable JsonArray array, Function<JsonElement, T> elementTransformer) {
+	public static <T> List<T> jsonArrayToList( JsonArray array, Function<JsonElement, T> elementTransformer) {
 		if (array == null)
 			return new ObjectArrayList<>();
 
@@ -109,7 +108,7 @@ public final class JsonUtil {
 	/**
 	 * Retrieves an optionally present Long from the provided {@link JsonObject}, or null if the element isn't present
 	 */
-	@Nullable
+	
 	public static Long getOptionalLong(JsonObject obj, String elementName) {
 		return obj.has(elementName) ? GsonHelper.getAsLong(obj, elementName) : null;
 	}
@@ -117,7 +116,7 @@ public final class JsonUtil {
 	/**
 	 * Retrieves an optionally present Boolean from the provided {@link JsonObject}, or null if the element isn't present
 	 */
-	@Nullable
+	
 	public static Boolean getOptionalBoolean(JsonObject obj, String elementName) {
 		return obj.has(elementName) ? GsonHelper.getAsBoolean(obj, elementName) : null;
 	}
@@ -125,7 +124,7 @@ public final class JsonUtil {
 	/**
 	 * Retrieves an optionally present Float from the provided {@link JsonObject}, or null if the element isn't present
 	 */
-	@Nullable
+	
 	public static Float getOptionalFloat(JsonObject obj, String elementName) {
 		return obj.has(elementName) ? GsonHelper.getAsFloat(obj, elementName) : null;
 	}
@@ -133,7 +132,7 @@ public final class JsonUtil {
 	/**
 	 * Retrieves an optionally present Double from the provided {@link JsonObject}, or null if the element isn't present
 	 */
-	@Nullable
+	
 	public static Double getOptionalDouble(JsonObject obj, String elementName) {
 		return obj.has(elementName) ? GsonHelper.getAsDouble(obj, elementName) : null;
 	}
@@ -141,7 +140,7 @@ public final class JsonUtil {
 	/**
 	 * Retrieves an optionally present Integer from the provided {@link JsonObject}, or null if the element isn't present
 	 */
-	@Nullable
+
 	public static Integer getOptionalInteger(JsonObject obj, String elementName) {
 		return obj.has(elementName) ? GsonHelper.getAsInt(obj, elementName) : null;
 	}
