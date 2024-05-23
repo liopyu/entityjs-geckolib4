@@ -78,7 +78,7 @@ public class AnimationState<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Sets the {@code AnimationState}'s current {@link AnimationController}
+	 * Sets the {@code AnimationEvent}'s current {@link AnimationController}
 	 */
 	public AnimationState<T> withController(AnimationController<T> controller) {
 		this.controller = controller;
@@ -87,7 +87,7 @@ public class AnimationState<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Gets the optional additional data map for the state.<br>
+	 * Gets the optional additional data map for the event.<br>
 	 * @see DataTicket
 	 */
 	public Map<DataTicket<?>, ?> getExtraData() {
@@ -95,7 +95,7 @@ public class AnimationState<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Get a data value saved to this animation state by the ticket for that data.<br>
+	 * Get a data value saved to this animation event by the ticket for that data.<br>
 	 * @see DataTicket
 	 * @param dataTicket The {@link DataTicket} for the data to retrieve
 	 * @return The cached data for the given {@code DataTicket}, or null if not saved
@@ -139,32 +139,5 @@ public class AnimationState<T extends GeoAnimatable> {
 	 */
 	public boolean isCurrentAnimation(RawAnimation animation) {
 		return Objects.equals(getController().currentRawAnimation, animation);
-	}
-
-	/**
-	 * Similar to {@link AnimationState#isCurrentAnimation}, but additionally checks the current stage of the animation by name.<br>
-	 * This can be used to check if a multi-stage animation has reached a given stage (if it is running at all)<br>
-	 * Note that this will still return true even if the animation has finished, matching with the last animation stage in the {@link RawAnimation} last provided
-	 * @param name The name of the animation stage to check (I.E. "move.walk")
-	 * @return Whether the controller's current stage is the one provided
-	 */
-	public boolean isCurrentAnimationStage(String name) {
-		return getController().getCurrentAnimation() != null && getController().getCurrentAnimation().animation().name().equals(name);
-	}
-
-	/**
-	 * Helper method for {@link AnimationController#forceAnimationReset()}<br>
-	 * This should be used in controllers when stopping a non-looping animation, so that it is reset to the start for the next time it starts
-	 */
-	public void resetCurrentAnimation() {
-		getController().forceAnimationReset();
-	}
-
-	/**
-	 * Helper method for {@link AnimationController#setAnimationSpeed}
-	 * @param speed The speed modifier for the controller (2 = twice as fast, 0.5 = half as fast, etc)
-	 */
-	public void setControllerSpeed(float speed) {
-		getController().setAnimationSpeed(speed);
 	}
 }

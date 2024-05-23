@@ -4,21 +4,21 @@ import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.fml.loading.FMLPaths;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
- * Abstract texture wrapper for GeckoLib textures.<br>
+ * Abstract texture wrapper for LioLib textures.<br>
  * Mostly just handles boilerplate
  */
 public abstract class GeoAbstractTexture extends AbstractTexture {
@@ -55,7 +55,7 @@ public abstract class GeoAbstractTexture extends AbstractTexture {
 	 */
 	protected void printDebugImageToDisk(ResourceLocation id, NativeImage newImage) {
 		try {
-			File file = new File(FMLPaths.GAMEDIR.get().toFile(), "GeoTexture Debug Printouts");
+			File file = new File(FabricLoader.getInstance().getGameDir().toFile(), "GeoTexture Debug Printouts");
 
 			if (!file.exists()) {
 				file.mkdirs();
@@ -88,7 +88,7 @@ public abstract class GeoAbstractTexture extends AbstractTexture {
 	/**
 	 * No-frills helper method for uploading {@link NativeImage images} into memory for use
 	 */
-	public static void uploadSimple(int texture, NativeImage image, boolean blur, boolean clamp) {
+	protected static void uploadSimple(int texture, NativeImage image, boolean blur, boolean clamp) {
 		TextureUtil.prepareImage(texture, 0, image.getWidth(), image.getHeight());
 		image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), blur, clamp, false, true);
 	}

@@ -1,9 +1,9 @@
 package net.liopyu.example.client.model.entity;
 
+import net.liopyu.liolib.LioLib;
 import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.client.renderer.entity.BatRenderer;
 import net.liopyu.example.entity.BatEntity;
-import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.model.DefaultedEntityGeoModel;
 import net.liopyu.liolib.model.GeoModel;
 

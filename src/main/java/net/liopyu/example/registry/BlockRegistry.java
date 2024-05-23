@@ -1,19 +1,29 @@
 package net.liopyu.example.registry;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 import net.liopyu.example.block.FertilizerBlock;
 import net.liopyu.example.block.GeckoHabitatBlock;
 import net.liopyu.liolib.LioLib;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
-public final class BlockRegistry {
-	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS,
-			LioLib.MOD_ID);
+public class BlockRegistry {
 
-	public static final RegistryObject<GeckoHabitatBlock> GECKO_HABITAT = BLOCKS.register("gecko_habitat",
-			GeckoHabitatBlock::new);
-	public static final RegistryObject<FertilizerBlock> FERTILIZER = BLOCKS.register("fertilizer",
-			FertilizerBlock::new);
+    public static final GeckoHabitatBlock GECKO_HABITAT_BLOCK = registerBlock("gecko_habitat", new GeckoHabitatBlock());
+    public static final FertilizerBlock FERTILIZER_BLOCK = registerBlock("fertilizer", new FertilizerBlock());
+
+    public static <B extends Block> B registerBlock(String name, B block) {
+        return register(block, new ResourceLocation(LioLib.MOD_ID, name));
+    }
+
+    private static <B extends Block> B register(B block, ResourceLocation name) {
+        Registry.register(Registry.BLOCK, name, block);
+        BlockItem item = new BlockItem(block, (new Item.Properties()));
+
+        item.registerBlocks(Item.BY_BLOCK, item);
+        Registry.register(Registry.ITEM, name, item);
+        return block;
+    }
 }

@@ -1,67 +1,87 @@
 package net.liopyu.liolib.network.packet;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
 import net.liopyu.liolib.animatable.GeoEntity;
 import net.liopyu.liolib.animatable.GeoReplacedEntity;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
+import net.liopyu.liolib.network.AbstractPacket;
+import net.liopyu.liolib.network.GeckoLibNetwork;
 import net.liopyu.liolib.util.ClientUtils;
 import net.liopyu.liolib.util.RenderUtils;
 
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
-
 /**
- * Packet for syncing user-definable animations that can be triggered from the server for {@link Entity Entities}
+ * Packet for syncing user-definable animations that can be triggered from the
+ * server for {@link net.minecraft.world.entity.Entity Entities}
  */
-public class EntityAnimTriggerPacket<D> {
-	private final int entityId;
-	private final boolean isReplacedEntity;
-	private final String controllerName;
-	private final String animName;
+public class EntityAnimTriggerPacket extends AbstractPacket {
+    private final int ENTITY_ID;
+    private final boolean IS_REPLACED_ENTITY;
 
-	public EntityAnimTriggerPacket(int entityId, @Nullable String controllerName, String animName) {
-		this(entityId, false, controllerName, animName);
-	}
+    private final String CONTROLLER_NAME;
+    private final String ANIM_NAME;
 
-	public EntityAnimTriggerPacket(int entityId, boolean isReplacedEntity, @Nullable String controllerName, String animName) {
-		this.entityId = entityId;
-		this.isReplacedEntity = isReplacedEntity;
-		this.controllerName = controllerName == null ? "" : controllerName;
-		this.animName = animName;
-	}
+    public EntityAnimTriggerPacket(int entityId, @Nullable String controllerName, String animName) {
+        this(entityId, false, controllerName, animName);
+    }
 
-	public void encode(FriendlyByteBuf buffer) {
-		buffer.writeVarInt(this.entityId);
-		buffer.writeBoolean(this.isReplacedEntity);
-		buffer.writeUtf(this.controllerName);
-		buffer.writeUtf(this.animName);
-	}
+    public EntityAnimTriggerPacket(int entityId, boolean isReplacedEntity, @Nullable String controllerName,
+                                   String animName) {
+        this.ENTITY_ID = entityId;
+        this.IS_REPLACED_ENTITY = isReplacedEntity;
+        this.CONTROLLER_NAME = controllerName == null ? "" : controllerName;
+        this.ANIM_NAME = animName;
+    }
 
-	public static <D> EntityAnimTriggerPacket<D> decode(FriendlyByteBuf buffer) {
-		return new EntityAnimTriggerPacket<>(buffer.readVarInt(), buffer.readBoolean(), buffer.readUtf(), buffer.readUtf());
-	}
+    @Override
+    public FriendlyByteBuf encode() {
+        FriendlyByteBuf buf = PacketByteBufs.create();
 
-	public void receivePacket(Supplier<NetworkEvent.Context> context) {
-		NetworkEvent.Context handler = context.get();
+        buf.writeVarInt(this.ENTITY_ID);
+        buf.writeBoolean(this.IS_REPLACED_ENTITY);
 
-		handler.enqueueWork(() -> {
-			Entity entity = ClientUtils.getLevel().getEntity(this.entityId);
+        buf.writeUtf(this.CONTROLLER_NAME);
+        buf.writeUtf(this.ANIM_NAME);
 
-			if (entity == null)
-				return;
+        return buf;
+    }
 
-			if (this.isReplacedEntity) {
-				GeoAnimatable animatable = RenderUtils.getReplacedAnimatable(entity.getType());
+    @Override
+    public ResourceLocation getPacketID() {
+        return GeckoLibNetwork.ENTITY_ANIM_TRIGGER_SYNC_PACKET_ID;
+    }
 
-				if (animatable instanceof GeoReplacedEntity replacedEntity)
-					replacedEntity.triggerAnim(entity, this.controllerName.isEmpty() ? null : this.controllerName, this.animName);
-			}
-			else if (entity instanceof GeoEntity geoEntity) {
-				geoEntity.triggerAnim(this.controllerName.isEmpty() ? null : this.controllerName, this.animName);
-			}
-		});
-		handler.setPacketHandled(true);
-	}
+    public static void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
+        final int ENTITY_ID = buf.readVarInt();
+        final boolean IS_REPLACED_ENTITY = buf.readBoolean();
+
+        final String CONTROLLER_NAME = buf.readUtf();
+        final String ANIM_NAME = buf.readUtf();
+
+        client.execute(() -> runOnThread(ENTITY_ID, IS_REPLACED_ENTITY, CONTROLLER_NAME, ANIM_NAME));
+    }
+
+    private static void runOnThread(int entityId, boolean isReplacedEntity, String controllerName, String animName) {
+        Entity entity = ClientUtils.getLevel().getEntity(entityId);
+        if (entity == null)
+            return;
+
+        if (!isReplacedEntity) {
+            if (entity instanceof GeoEntity geoEntity) {
+                geoEntity.triggerAnim(controllerName.isEmpty() ? null : controllerName, animName);
+            }
+            return;
+        }
+
+        GeoAnimatable animatable = RenderUtils.getReplacedAnimatable(entity.getType());
+        if (animatable instanceof GeoReplacedEntity replacedEntity)
+            replacedEntity.triggerAnim(entity, controllerName.isEmpty() ? null : controllerName, animName);
+    }
 }

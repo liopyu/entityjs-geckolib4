@@ -16,8 +16,8 @@ import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animatable.model.CoreGeoModel;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.Animation;
-import net.liopyu.liolib.core.animation.AnimationProcessor;
 import net.liopyu.liolib.core.animation.AnimationState;
+import net.liopyu.liolib.core.animation.AnimationProcessor;
 import net.liopyu.liolib.core.molang.MolangParser;
 import net.liopyu.liolib.core.molang.MolangQueries;
 import net.liopyu.liolib.core.object.DataTicket;
@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 /**
  * Base class for all code-based model objects.<br>
  * All models to registered to a {@link GeoRenderer} should be an instance of this or one of its subclasses.
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Models">GeckoLib Wiki - Models</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Models">LioLib Wiki - Models</a>
  */
 public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<T> {
 	private final AnimationProcessor<T> processor = new AnimationProcessor<>(this);
@@ -39,7 +39,6 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 	private BakedGeoModel currentModel = null;
 	private double animTime;
 	private double lastGameTickTime;
-	private long lastRenderedInstance = -1;
 
 	/**
 	 * Returns the resource path for the {@link BakedGeoModel} (model json file) to render based on the provided animatable
@@ -58,7 +57,7 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 
 	/**
 	 * Override this and return true if Geckolib should crash when attempting to animate the model, but fails to find a bone.<br>
-	 * By default, GeckoLib will just gracefully ignore a missing bone, which might cause oddities with incorrect models or mismatching variables.<br>
+	 * By default, LioLib will just gracefully ignore a missing bone, which might cause oddities with incorrect models or mismatching variables.<br>
 	 */
 	public boolean crashIfBoneMissing() {
 		return false;
@@ -125,7 +124,7 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 	 * Add additional {@link DataTicket DataTickets} to the {@link AnimationState} to be handled by your animation handler at render time
 	 * @param animatable The animatable instance currently being animated
 	 * @param instanceId The unique instance id of the animatable being animated
-	 * @param dataConsumer The DataTicket + data consumer to be added to the AnimationState
+	 * @param dataConsumer The DataTicket + data consumer to be added to the AnimationEvent
 	 */
 	public void addAdditionalStateData(T animatable, long instanceId, BiConsumer<DataTicket<T>, T> dataConsumer) {}
 
@@ -136,19 +135,18 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 		Double currentTick = animationState.getData(DataTickets.TICK);
 
 		if (currentTick == null)
-			currentTick = animatable instanceof Entity entity ? (double)entity.tickCount : RenderUtils.getCurrentTick();
+			currentTick = animatable instanceof Entity livingEntity ? (double) livingEntity.tickCount : RenderUtils.getCurrentTick();
 
 		if (animatableManager.getFirstTickTime() == -1)
 			animatableManager.startedAt(currentTick + mc.getFrameTime());
 
-		double currentFrameTime = animatable instanceof Entity ? currentTick + mc.getFrameTime() : currentTick - animatableManager.getFirstTickTime();
-		boolean isReRender = !animatableManager.isFirstTick() && currentFrameTime == animatableManager.getLastUpdateTime();
-
-		if (isReRender && instanceId == this.lastRenderedInstance)
-			return;
-
 		if (!mc.isPaused() || animatable.shouldPlayAnimsWhileGamePaused()) {
-			animatableManager.updatedAt(currentFrameTime);
+			if (animatable instanceof LivingEntity) {
+				animatableManager.updatedAt(currentTick + mc.getFrameTime());
+			}
+			else {
+				animatableManager.updatedAt(currentTick - animatableManager.getFirstTickTime());
+			}
 
 			double lastUpdateTime = animatableManager.getLastUpdateTime();
 			this.animTime += lastUpdateTime - this.lastGameTickTime;
@@ -156,7 +154,6 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 		}
 
 		animationState.animationTick = this.animTime;
-		this.lastRenderedInstance = instanceId;
 		AnimationProcessor<T> processor = getAnimationProcessor();
 
 		processor.preAnimationSetup(animationState.getAnimatable(), this.animTime);
@@ -179,7 +176,7 @@ public abstract class GeoModel<T extends GeoAnimatable> implements CoreGeoModel<
 
 		if (animatable instanceof Entity entity) {
 			parser.setMemoizedValue(MolangQueries.DISTANCE_FROM_CAMERA, () -> mc.gameRenderer.getMainCamera().getPosition().distanceTo(entity.position()));
-			parser.setMemoizedValue(MolangQueries.IS_ON_GROUND, () -> RenderUtils.booleanToFloat(entity.onGround()));
+			parser.setMemoizedValue(MolangQueries.IS_ON_GROUND, () -> RenderUtils.booleanToFloat(entity.isOnGround()));
 			parser.setMemoizedValue(MolangQueries.IS_IN_WATER, () -> RenderUtils.booleanToFloat(entity.isInWater()));
 			parser.setMemoizedValue(MolangQueries.IS_IN_WATER_OR_RAIN, () -> RenderUtils.booleanToFloat(entity.isInWaterRainOrBubble()));
 

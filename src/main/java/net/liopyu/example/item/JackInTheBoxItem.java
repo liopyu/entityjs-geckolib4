@@ -8,11 +8,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.liopyu.example.client.renderer.item.JackInTheBoxRenderer;
 import net.liopyu.example.registry.SoundRegistry;
 import net.liopyu.liolib.animatable.GeoItem;
 import net.liopyu.liolib.animatable.SingletonGeoAnimatable;
+import net.liopyu.liolib.animatable.client.RenderProvider;
 import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
@@ -22,6 +22,7 @@ import net.liopyu.liolib.util.ClientUtils;
 import net.liopyu.liolib.util.GeckoLibUtil;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Example {@link GeoItem} implementation in the form of a Jack-in-the-Box.<br>
@@ -29,6 +30,7 @@ import java.util.function.Consumer;
 public final class JackInTheBoxItem extends Item implements GeoItem {
 	private static final RawAnimation POPUP_ANIM = RawAnimation.begin().thenPlay("use.popup");
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+	private final Supplier<Object> renderProvider = GeoItem.makeRenderer(this);
 
 	public JackInTheBoxItem(Properties properties) {
 		super(properties);
@@ -38,10 +40,10 @@ public final class JackInTheBoxItem extends Item implements GeoItem {
 		SingletonGeoAnimatable.registerSyncedAnimatable(this);
 	}
 
-	// Utilise the existing forge hook to define our custom renderer (which we created in createRenderer)
+	// Utilise our own render hook to define our custom renderer
 	@Override
-	public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-		consumer.accept(new IClientItemExtensions() {
+	public void createRenderer(Consumer<Object> consumer) {
+		consumer.accept(new RenderProvider() {
 			private JackInTheBoxRenderer renderer;
 
 			@Override
@@ -54,18 +56,23 @@ public final class JackInTheBoxItem extends Item implements GeoItem {
 		});
 	}
 
+	@Override
+	public Supplier<Object> getRenderProvider() {
+		return this.renderProvider;
+	}
+
 	// Let's add our animation controller
 	@Override
 	public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
 		controllers.add(new AnimationController<>(this, "popup_controller", 20, state -> PlayState.STOP)
 				.triggerableAnim("box_open", POPUP_ANIM)
 				// We've marked the "box_open" animation as being triggerable from the server
-				.setSoundKeyframeHandler(state -> {
+				.setSoundKeyframeHandler(event -> {
 					// Use helper method to avoid client-code in common class
 					Player player = ClientUtils.getClientPlayer();
 
 					if (player != null)
-						player.playSound(SoundRegistry.JACK_MUSIC.get(), 1, 1);
+						player.playSound(SoundRegistry.JACK_MUSIC, 1, 1);
 				}));
 	}
 

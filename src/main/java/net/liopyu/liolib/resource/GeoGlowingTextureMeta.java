@@ -7,14 +7,13 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Metadata class that stores the data for GeckoLib's {@link net.liopyu.liolib.renderer.layer.AutoGlowingGeoLayer emissive texture feature} for a given texture
+ * Metadata class that stores the data for LioLib's {@link net.liopyu.liolib.renderer.layer.AutoGlowingGeoLayer emissive texture feature} for a given texture
  */
 public class GeoGlowingTextureMeta {
 	public static final MetadataSectionSerializer<GeoGlowingTextureMeta> DESERIALIZER = new MetadataSectionSerializer<>() {
@@ -80,10 +79,10 @@ public class GeoGlowingTextureMeta {
 
 		for (int x = 0; x < glowLayer.getWidth(); x++) {
 			for (int y = 0; y < glowLayer.getHeight(); y++) {
-				int color = glowLayer.getPixelRGBA(x, y); // Actually ABGR. Blame Mojang.
+				int color = glowLayer.getPixelRGBA(x, y);
 
 				if (color != 0)
-					pixels.add(new Pixel(x, y, FastColor.ABGR32.alpha(color)));
+					pixels.add(new Pixel(x, y, NativeImage.getA(color)));
 			}
 		}
 
@@ -98,10 +97,10 @@ public class GeoGlowingTextureMeta {
 	 */
 	public void createImageMask(NativeImage originalImage, NativeImage newImage) {
 		for (Pixel pixel : this.pixels) {
-			int color = originalImage.getPixelRGBA(pixel.x, pixel.y); // Actually ABGR. Blame Mojang.
+			int color = originalImage.getPixelRGBA(pixel.x, pixel.y);
 
 			if (pixel.alpha > 0)
-				color = FastColor.ABGR32.color(pixel.alpha, FastColor.ABGR32.blue(color), FastColor.ABGR32.green(color), FastColor.ABGR32.red(color));
+				color = NativeImage.combine(pixel.alpha, NativeImage.getB(color), NativeImage.getG(color), NativeImage.getR(color));
 
 			newImage.setPixelRGBA(pixel.x, pixel.y, color);
 			originalImage.setPixelRGBA(pixel.x, pixel.y, 0);

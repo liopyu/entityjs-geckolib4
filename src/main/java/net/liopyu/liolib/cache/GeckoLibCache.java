@@ -1,25 +1,5 @@
 package net.liopyu.liolib.cache;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.PreparableReloadListener.PreparationBarrier;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.fml.ModLoader;
-import net.liopyu.liolib.LioLib;
-import net.liopyu.liolib.LioLibException;
-import net.liopyu.liolib.cache.object.BakedGeoModel;
-import net.liopyu.liolib.core.animatable.model.CoreGeoModel;
-import net.liopyu.liolib.loading.FileLoader;
-import net.liopyu.liolib.loading.json.FormatVersion;
-import net.liopyu.liolib.loading.json.raw.Model;
-import net.liopyu.liolib.loading.object.BakedAnimations;
-import net.liopyu.liolib.loading.object.BakedModelFactory;
-import net.liopyu.liolib.loading.object.GeometryTree;
-
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -29,6 +9,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.liopyu.liolib.LioLib;
+import net.liopyu.liolib.LioLibException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener.PreparationBarrier;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.liopyu.liolib.cache.object.BakedGeoModel;
+import net.liopyu.liolib.core.animatable.model.CoreGeoModel;
+import net.liopyu.liolib.loading.FileLoader;
+import net.liopyu.liolib.loading.json.FormatVersion;
+import net.liopyu.liolib.loading.json.raw.Model;
+import net.liopyu.liolib.loading.object.BakedAnimations;
+import net.liopyu.liolib.loading.object.BakedModelFactory;
+import net.liopyu.liolib.loading.object.GeometryTree;
 
 /**
  * Cache class for holding loaded {@link net.liopyu.liolib.core.animation.Animation Animations}
@@ -42,14 +41,14 @@ public final class GeckoLibCache {
 
 	public static Map<ResourceLocation, BakedAnimations> getBakedAnimations() {
 		if (!LioLib.hasInitialized)
-			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
+			throw new RuntimeException("LioLib was never initialized! Please read the documentation!");
 
 		return ANIMATIONS;
 	}
 
 	public static Map<ResourceLocation, BakedGeoModel> getBakedModels() {
 		if (!LioLib.hasInitialized)
-			throw new RuntimeException("GeckoLib was never initialized! Please read the documentation!");
+			throw new RuntimeException("LioLib was never initialized! Please read the documentation!");
 
 		return MODELS;
 	}
@@ -58,19 +57,16 @@ public final class GeckoLibCache {
 		Minecraft mc = Minecraft.getInstance();
 
 		if (mc == null) {
-			if (!ModLoader.isDataGenRunning())
-				LioLib.LOGGER.warn("Minecraft.getInstance() was null, could not register reload listeners");
-
 			return;
 		}
 
 		if (!(mc.getResourceManager() instanceof ReloadableResourceManager resourceManager))
-			throw new RuntimeException("GeckoLib was initialized too early!");
+			throw new RuntimeException("LioLib was initialized too early!");
 
 		resourceManager.registerReloadListener(GeckoLibCache::reload);
 	}
 
-	private static CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager,
+	public static CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager,
 			ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor,
 			Executor gameExecutor) {
 		Map<ResourceLocation, BakedAnimations> animations = new Object2ObjectOpenHashMap<>();

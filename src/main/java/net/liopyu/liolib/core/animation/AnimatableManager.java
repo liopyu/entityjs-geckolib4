@@ -47,26 +47,26 @@ public class AnimatableManager<T extends GeoAnimatable> {
 	 * Generally speaking you probably should have added it during {@link GeoAnimatable#registerControllers}
 	 */
 	public void addController(AnimationController controller) {
-		getAnimationControllers().put(controller.getName(), controller);
+		this.animationControllers.put(controller.getName(), controller);
 	}
 
 	/**
 	 * Removes an {@link AnimationController} from this manager by the given name, if present.
 	 */
 	public void removeController(String name) {
-		getAnimationControllers().remove(name);
+		this.animationControllers.remove(name);
 	}
 
 	public Map<String, AnimationController<T>> getAnimationControllers() {
-		return this.animationControllers;
+		return animationControllers;
 	}
 
 	public Map<String, BoneSnapshot> getBoneSnapshotCollection() {
-		return this.boneSnapshotCollection;
+		return boneSnapshotCollection;
 	}
 
 	public void clearSnapshotCache() {
-		getBoneSnapshotCollection().clear();
+		this.boneSnapshotCollection.clear();
 	}
 
 	public double getLastUpdateTime() {
@@ -85,7 +85,7 @@ public class AnimatableManager<T extends GeoAnimatable> {
 		this.firstTickTime = time;
 	}
 
-	public boolean isFirstTick() {
+	protected boolean isFirstTick() {
 		return this.isFirstTick;
 	}
 
@@ -140,7 +140,6 @@ public class AnimatableManager<T extends GeoAnimatable> {
 	/**
 	 * Helper class for the AnimatableManager to cleanly register controllers in one shot at instantiation for efficiency
 	 */
-	// TODO 1.20+ Convert to record
 	public static final class ControllerRegistrar {
 		private final List<AnimationController<? extends GeoAnimatable>> controllers = new ObjectArrayList<>(4);
 

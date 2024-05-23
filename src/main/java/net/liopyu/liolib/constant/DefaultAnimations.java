@@ -1,5 +1,9 @@
 package net.liopyu.liolib.constant;
 
+import net.liopyu.liolib.animatable.GeoBlockEntity;
+import net.liopyu.liolib.animatable.GeoEntity;
+import net.liopyu.liolib.animatable.GeoItem;
+import net.liopyu.liolib.animatable.GeoReplacedEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
@@ -87,14 +91,14 @@ public final class DefaultAnimations {
 
 	/**
 	 * Generic {@link DefaultAnimations#SPAWN spawn} controller.<br>
-	 * Plays the spawn animation as long as the current {@link GeoAnimatable#getTick tick} of the animatable is {@literal <=} the value provided in {@code ticks}.<br>
+	 * Plays the spawn animation as long as the current {@link GeoAnimatable#getTick tick} of the animatable is <= the value provided in {@code ticks}.<br>
 	 * For the {@code objectSupplier}, provide the relevant object for the animatable being animated.
 	 * Recommended:
 	 * <ul>
-	 *     <li>{@link net.liopyu.liolib.animatable.GeoEntity GeoEntity}: state -> animatable</li>
-	 *     <li>{@link net.liopyu.liolib.animatable.GeoBlockEntity GeoBlockEntity}: state -> animatable</li>
-	 *     <li>{@link net.liopyu.liolib.animatable.GeoReplacedEntity GeoReplacedEntity}: state -> state.getData(DataTickets.ENTITY)</li>
-	 *     <li>{@link net.liopyu.liolib.animatable.GeoItem GeoItem}: state -> state.getData(DataTickets.ITEMSTACK)</li>
+	 *     <li>{@link GeoEntity GeoEntity}: state -> animatable</li>
+	 *     <li>{@link GeoBlockEntity GeoBlockEntity}: state -> animatable</li>
+	 *     <li>{@link GeoReplacedEntity GeoReplacedEntity}: state -> state.getData(DataTickets.ENTITY)</li>
+	 *     <li>{@link GeoItem GeoItem}: state -> state.getData(DataTickets.ITEMSTACK)</li>
 	 *     <li>{@code GeoArmor}: state -> state.getData(DataTickets.ENTITY)</li>
 	 * </ul>
 	 * @param animatable The animatable the animation is for
@@ -125,7 +129,7 @@ public final class DefaultAnimations {
 
 	/**
 	 * Generic attack controller.<br>
-	 * Plays an attack animation if the animatable is {@link LivingEntity#swinging}.<br>
+	 * Plays an attack animation if the animatable is {@link net.minecraft.world.entity.LivingEntity#swinging}.<br>
 	 * Resets the animation each time it stops, ready for the next swing
 	 * @param animatable The entity that should swing
 	 * @param attackAnimation The attack animation to play (E.G. swipe, strike, stomp, swing, etc)

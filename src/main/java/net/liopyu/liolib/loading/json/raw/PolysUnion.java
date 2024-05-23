@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import net.liopyu.liolib.util.JsonUtil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container class for poly union information, only used in deserialization at startup

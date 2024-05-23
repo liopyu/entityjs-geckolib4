@@ -13,17 +13,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.liopyu.example.block.entity.GeckoHabitatBlockEntity;
 import net.liopyu.example.client.model.block.GeckoHabitatModel;
 import net.liopyu.example.client.renderer.block.GeckoHabitatBlockRenderer;
 import net.liopyu.example.registry.BlockEntityRegistry;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
- * Example animated block using GeckoLib animations.<br>
+ * Example animated block using LioLib animations.<br>
  * There's nothing to see here since the {@link Block} class itself has little to do with animations
  * @see GeckoHabitatModel
  * @see GeckoHabitatBlockEntity
@@ -33,7 +34,7 @@ public class GeckoHabitatBlock extends BaseEntityBlock implements EntityBlock {
 	public static final DirectionProperty FACING = BlockStateProperties.FACING;
 
 	public GeckoHabitatBlock() {
-		super(Properties.of().noOcclusion());
+		super(Properties.of(Material.STONE).noOcclusion());
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class GeckoHabitatBlock extends BaseEntityBlock implements EntityBlock {
 	@Nullable
 	@Override
 	public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-		return BlockEntityRegistry.GECKO_HABITAT.get().create(blockPos, blockState);
+		return BlockEntityRegistry.GECKO_HABITAT.create(blockPos, blockState);
 	}
 
 	@Override

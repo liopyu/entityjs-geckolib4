@@ -1,5 +1,7 @@
 package net.liopyu.example.entity;
 
+import net.liopyu.example.client.renderer.entity.GremlinRenderer;
+import net.liopyu.example.client.renderer.entity.MutantZombieRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -11,25 +13,24 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.liopyu.example.client.renderer.entity.MutantZombieRenderer;
 import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.animatable.GeoEntity;
 import net.liopyu.liolib.constant.DefaultAnimations;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
 import net.liopyu.liolib.core.animation.AnimationState;
 import net.liopyu.liolib.core.animation.RawAnimation;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.object.PlayState;
 import net.liopyu.liolib.renderer.DynamicGeoEntityRenderer;
 import net.liopyu.liolib.util.GeckoLibUtil;
 
 /**
- * Example extended-support entity for GeckoLib advanced rendering
+ * Example extended-support entity for LioLib advanced rendering
  * @see DynamicGeoEntityRenderer
  * @see MutantZombieRenderer
- * @see net.liopyu.example.client.renderer.entity.GremlinRenderer
+ * @see GremlinRenderer
  */
 public class DynamicExampleEntity extends PathfinderMob implements GeoEntity {
 	// Pre-define our RawAnimations for use later
@@ -165,7 +166,7 @@ public class DynamicExampleEntity extends PathfinderMob implements GeoEntity {
 	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
-		if (this.level().isClientSide() || stack.isEmpty())
+		if (this.level.isClientSide() || stack.isEmpty())
 			return super.mobInteract(player, hand);
 
 		EquipmentSlot slot = LivingEntity.getEquipmentSlotForItem(stack);

@@ -1,14 +1,14 @@
 package net.liopyu.example.entity;
 
+import net.liopyu.example.client.model.entity.FakeGlassModel;
+import net.liopyu.example.client.renderer.entity.FakeGlassRenderer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
-import net.liopyu.example.client.model.entity.FakeGlassModel;
-import net.liopyu.example.client.renderer.entity.FakeGlassRenderer;
 import net.liopyu.liolib.animatable.GeoEntity;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.renderer.DynamicGeoEntityRenderer;
 import net.liopyu.liolib.util.GeckoLibUtil;
 

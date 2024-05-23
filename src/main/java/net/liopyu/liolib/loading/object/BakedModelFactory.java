@@ -9,13 +9,13 @@ import net.liopyu.liolib.loading.json.raw.*;
 import net.liopyu.liolib.util.GeckoLibUtil;
 import net.liopyu.liolib.util.RenderUtils;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Base interface for a factory of {@link BakedGeoModel} objects.
- * Handled by default by GeckoLib, but custom implementations may be added by other mods for special needs
+ * Handled by default by LioLib, but custom implementations may be added by other mods for special needs
  */
 public interface BakedModelFactory {
 	final Map<String, BakedModelFactory> FACTORIES = new Object2ObjectOpenHashMap<>(1);
@@ -177,7 +177,7 @@ public interface BakedModelFactory {
 	 * Holder class to make it easier to store and refer to vertices for a given cube
 	 */
 	record VertexSet(GeoVertex bottomLeftBack, GeoVertex bottomRightBack, GeoVertex topLeftBack, GeoVertex topRightBack,
-							GeoVertex topLeftFront, GeoVertex topRightFront, GeoVertex bottomLeftFront, GeoVertex bottomRightFront) {
+					 GeoVertex topLeftFront, GeoVertex topRightFront, GeoVertex bottomLeftFront, GeoVertex bottomRightFront) {
 		public VertexSet(Vec3 origin, Vec3 vertexSize, double inflation) {
 			this(
 					new GeoVertex(origin.x - inflation, origin.y - inflation, origin.z - inflation),

@@ -1,53 +1,67 @@
 package net.liopyu.liolib.network.packet;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimatableManager;
+import net.liopyu.liolib.network.AbstractPacket;
 import net.liopyu.liolib.network.GeckoLibNetwork;
 
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Packet for syncing user-definable animations that can be triggered from the server
+ * Packet for syncing user-definable animations that can be triggered from the
+ * server
  */
-public class AnimTriggerPacket<D> {
-	private final String syncableId;
-	private final long instanceId;
-	private final String controllerName;
-	private final String animName;
+public class AnimTriggerPacket extends AbstractPacket {
+    private final String syncableId;
+    private final long instanceId;
+    private final String controllerName;
+    private final String animName;
 
-	public AnimTriggerPacket(String syncableId, long instanceId, @Nullable String controllerName, String animName) {
-		this.syncableId = syncableId;
-		this.instanceId = instanceId;
-		this.controllerName = controllerName == null ? "" : controllerName;
-		this.animName = animName;
-	}
+    public AnimTriggerPacket(String syncableId, long instanceId, @Nullable String controllerName, String animName) {
+        this.syncableId = syncableId;
+        this.instanceId = instanceId;
+        this.controllerName = controllerName == null ? "" : controllerName;
+        this.animName = animName;
+    }
 
-	public void encode(FriendlyByteBuf buffer) {
-		buffer.writeUtf(this.syncableId);
-		buffer.writeVarLong(this.instanceId);
-		buffer.writeUtf(this.controllerName);
-		buffer.writeUtf(this.animName);
-	}
+    public FriendlyByteBuf encode() {
+        FriendlyByteBuf buf = PacketByteBufs.create();
 
-	public static <D> AnimTriggerPacket<D> decode(FriendlyByteBuf buffer) {
-		return new AnimTriggerPacket<>(buffer.readUtf(), buffer.readVarLong(), buffer.readUtf(), buffer.readUtf());
-	}
+        buf.writeUtf(this.syncableId);
+        buf.writeVarLong(this.instanceId);
+        buf.writeUtf(this.controllerName);
+        buf.writeUtf(this.animName);
 
-	public void receivePacket(Supplier<NetworkEvent.Context> context) {
-		NetworkEvent.Context handler = context.get();
+        return buf;
+    }
 
-		handler.enqueueWork(() -> {
-			GeoAnimatable animatable = GeckoLibNetwork.getSyncedAnimatable(this.syncableId);
+    @Override
+    public ResourceLocation getPacketID() {
+        return GeckoLibNetwork.ANIM_TRIGGER_SYNC_PACKET_ID;
+    }
 
-			if (animatable != null) {
-				AnimatableManager<?> manager = animatable.getAnimatableInstanceCache().getManagerForId(this.instanceId);
+    public static void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
+        String syncableId = buf.readUtf();
+        long instanceId = buf.readVarLong();
+        String controllerName = buf.readUtf();
+        String animName = buf.readUtf();
 
-				manager.tryTriggerAnimation(this.controllerName, this.animName);
-			}
-		});
-		handler.setPacketHandled(true);
-	}
+        client.execute(() -> runOnThread(syncableId, instanceId, controllerName, animName));
+    }
+
+    private static <D> void runOnThread(String syncableId, long instanceId, String controllerName, String animName) {
+        GeoAnimatable animatable = GeckoLibNetwork.getSyncedAnimatable(syncableId);
+
+        if (animatable != null) {
+            AnimatableManager<?> manager = animatable.getAnimatableInstanceCache().getManagerForId(instanceId);
+
+            manager.tryTriggerAnimation(controllerName, animName);
+        }
+    }
 }

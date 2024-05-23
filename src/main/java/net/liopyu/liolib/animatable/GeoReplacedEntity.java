@@ -1,22 +1,24 @@
 package net.liopyu.liolib.animatable;
 
+import net.liopyu.example.entity.ReplacedCreeperEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.network.PacketDistributor;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.network.GeckoLibNetwork;
 import net.liopyu.liolib.network.SerializableDataTicket;
 import net.liopyu.liolib.network.packet.EntityAnimDataSyncPacket;
 import net.liopyu.liolib.network.packet.EntityAnimTriggerPacket;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The {@link GeoAnimatable} interface specific to {@link Entity Entities}.
  * This interface is <u>specifically</u> for entities replacing the rendering of other, existing entities.
- * @see software.bernie.example.entity.ReplacedCreeperEntity
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Entity-Animations">GeckoLib Wiki - Entity Animations</a>
+ * @see ReplacedCreeperEntity
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Entity-Animations">LioLib Wiki - Entity Animations</a>
  */
 public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	/**
@@ -46,11 +48,12 @@ public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	 * @param data The data to sync
 	 */
 	default <D> void setAnimData(Entity relatedEntity, SerializableDataTicket<D> dataTicket, D data) {
-		if (relatedEntity.level().isClientSide()) {
+		if (relatedEntity.getLevel().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(relatedEntity.getId()).setData(dataTicket, data);
 		}
 		else {
-			GeckoLibNetwork.send(new EntityAnimDataSyncPacket<>(relatedEntity.getId(), dataTicket, data), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> relatedEntity));
+			EntityAnimDataSyncPacket<D> entityAnimDataSyncPacket = new EntityAnimDataSyncPacket<>(relatedEntity.getId(), dataTicket, data);
+			GeckoLibNetwork.sendToTrackingEntityAndSelf(entityAnimDataSyncPacket, relatedEntity);
 		}
 	}
 
@@ -62,14 +65,15 @@ public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	 * @param animName The name of animation to trigger. This needs to have been registered with the controller via {@link net.liopyu.liolib.core.animation.AnimationController#triggerableAnim AnimationController.triggerableAnim}
 	 */
 	default void triggerAnim(Entity relatedEntity, @Nullable String controllerName, String animName) {
-		if (relatedEntity.level().isClientSide()) {
+		if (relatedEntity.getLevel().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(relatedEntity.getId()).tryTriggerAnimation(controllerName, animName);
 		}
 		else {
-			GeckoLibNetwork.send(new EntityAnimTriggerPacket<>(relatedEntity.getId(), controllerName, animName), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> relatedEntity));
+			EntityAnimTriggerPacket entityAnimTriggerPacket = new EntityAnimTriggerPacket(relatedEntity.getId(), controllerName, animName);
+			GeckoLibNetwork.sendToTrackingEntityAndSelf(entityAnimTriggerPacket, relatedEntity);
 		}
 	}
-
+	
 	/**
 	 * Returns the current age/tick of the animatable instance.<br>
 	 * By default this is just the animatable's age in ticks, but this method allows for non-ticking custom animatables to provide their own values
@@ -79,5 +83,15 @@ public interface GeoReplacedEntity extends SingletonGeoAnimatable {
 	@Override
 	default double getTick(Object entity) {
 		return ((Entity)entity).tickCount;
+	}
+
+	// These methods aren't used for GeoReplacedEntity
+	@Override
+	default void createRenderer(Consumer<Object> consumer) {}
+
+	// These methods aren't used for GeoReplacedEntity
+	@Override
+	default Supplier<Object> getRenderProvider() {
+		return null;
 	}
 }

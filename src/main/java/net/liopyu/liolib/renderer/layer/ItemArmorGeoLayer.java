@@ -26,9 +26,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.liopyu.liolib.animatable.GeoItem;
+import net.liopyu.liolib.animatable.client.RenderProvider;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.cache.object.GeoBone;
 import net.liopyu.liolib.cache.object.GeoCube;
@@ -37,13 +36,12 @@ import net.liopyu.liolib.renderer.GeoArmorRenderer;
 import net.liopyu.liolib.renderer.GeoRenderer;
 import net.liopyu.liolib.util.RenderUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**
- * Builtin class for handling dynamic armor rendering on GeckoLib entities.<br>
- * Supports both {@link GeoItem GeckoLib} and {@link ArmorItem Vanilla} armor models.<br>
+ * Builtin class for handling dynamic armor rendering on LioLib entities.<br>
+ * Supports both {@link GeoItem LioLib} and {@link net.minecraft.world.item.ArmorItem Vanilla} armor models.<br>
  * Unlike a traditional armor renderer, this renderer renders per-bone, giving much more flexible armor rendering.
  */
 public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends GeoRenderLayer<T> {
@@ -66,7 +64,7 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 	 * Return an EquipmentSlot for a given {@link ItemStack} and animatable instance.<br>
 	 * This is what determines the base model to use for rendering a particular stack
 	 */
-	@Nonnull
+
 	protected EquipmentSlot getEquipmentSlotForBone(GeoBone bone, ItemStack stack, T animatable) {
 		for(EquipmentSlot slot : EquipmentSlot.values()) {
 			if(slot.getType() == EquipmentSlot.Type.ARMOR) {
@@ -82,7 +80,7 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 	 * Return a ModelPart for a given {@link GeoBone}.<br>
 	 * This is then transformed into position for the final render
 	 */
-	@Nonnull
+
 	protected ModelPart getModelPartForBone(GeoBone bone, EquipmentSlot slot, ItemStack stack, T animatable, HumanoidModel<?> baseModel) {
 		return baseModel.body;
 	}
@@ -145,6 +143,7 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 				if (model instanceof GeoArmorRenderer<?> geoArmorRenderer) {
 					prepModelPartForRender(poseStack, bone, modelPart);
 					geoArmorRenderer.prepForRender(animatable, armorStack, slot, model);
+					geoArmorRenderer.setAllVisible(false);
 					geoArmorRenderer.applyBoneVisibilityByPart(slot, modelPart, model);
 					geoArmorRenderer.renderToBuffer(poseStack, null, packedLight, packedOverlay, 1, 1, 1, 1);
 				}
@@ -198,11 +197,11 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 	/**
 	 * Returns a cached instance of a base HumanoidModel that is used for rendering/modelling the provided {@link ItemStack}
 	 */
-	@Nonnull
-	protected HumanoidModel<?> getModelForItem(GeoBone bone, EquipmentSlot slot, ItemStack stack, T animatable) {
-		HumanoidModel<?> defaultModel = slot == EquipmentSlot.LEGS ? INNER_ARMOR_MODEL : OUTER_ARMOR_MODEL;
 
-		return IClientItemExtensions.of(stack).getHumanoidArmorModel(animatable, stack, slot, defaultModel);
+	protected HumanoidModel<?> getModelForItem(GeoBone bone, EquipmentSlot slot, ItemStack stack, T animatable) {
+		HumanoidModel<LivingEntity> defaultModel = slot == EquipmentSlot.LEGS ? INNER_ARMOR_MODEL : OUTER_ARMOR_MODEL;
+		
+		return RenderProvider.of(stack).getHumanoidArmorModel(null, stack, null, defaultModel);
 	}
 
 	/**
@@ -223,7 +222,12 @@ public class ItemArmorGeoLayer<T extends LivingEntity & GeoAnimatable> extends G
 			type = "_" + type;
 
 		String texture = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, path, (slot == EquipmentSlot.LEGS ? 2 : 1), type);
-		texture = ForgeHooksClient.getArmorTexture(entity, stack, texture, slot, type);
+		ResourceLocation ResourceLocation = ARMOR_PATH_CACHE.get(texture);
+
+		if (ResourceLocation == null) {
+			ResourceLocation = new ResourceLocation(texture);
+			ARMOR_PATH_CACHE.put(texture, ResourceLocation);
+		}
 
 		return ARMOR_PATH_CACHE.computeIfAbsent(texture, ResourceLocation::new);
 	}

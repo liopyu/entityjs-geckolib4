@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonParseException;
 import net.liopyu.liolib.util.JsonUtil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container class for locator value information, only used in deserialization at startup

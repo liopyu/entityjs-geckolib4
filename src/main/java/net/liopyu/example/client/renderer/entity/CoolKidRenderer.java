@@ -1,10 +1,10 @@
 package net.liopyu.example.client.renderer.entity;
 
+import net.liopyu.liolib.LioLib;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.client.renderer.entity.layer.CoolKidGlassesLayer;
 import net.liopyu.example.entity.CoolKidEntity;
-import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.model.DefaultedEntityGeoModel;
 import net.liopyu.liolib.renderer.GeoEntityRenderer;
 

@@ -8,7 +8,7 @@ import net.minecraft.util.GsonHelper;
 import net.liopyu.liolib.loading.json.FormatVersion;
 import net.liopyu.liolib.util.JsonUtil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container class for model information, only used in deserialization at startup

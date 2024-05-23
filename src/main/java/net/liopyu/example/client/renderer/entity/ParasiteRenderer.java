@@ -1,7 +1,7 @@
 package net.liopyu.example.client.renderer.entity;
 
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.liopyu.example.client.model.entity.ParasiteModel;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.liopyu.example.entity.ParasiteEntity;
 import net.liopyu.liolib.renderer.GeoEntityRenderer;
 

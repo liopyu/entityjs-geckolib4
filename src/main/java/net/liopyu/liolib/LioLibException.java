@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.io.Serial;
 
 /**
- * Generic {@link Exception} wrapper for GeckoLib.<br>
+ * Generic {@link Exception} wrapper for LioLib.<br>
  * Mostly just serves as a marker for internal error handling.
  */
 public class LioLibException extends RuntimeException {

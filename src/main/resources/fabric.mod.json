@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "liolib",
+	"version": "${version}",
+	"name": "LioLib",
+	"description": "Liolib is a fork of GeckoLib which is an animation engine for Minecraft Mods, with support for complex 3D keyframe-based animations, 30+ easings, concurrent animation support, sound and particle keyframes, event keyframes, and more.",
+	"authors": [
+		"Gecko, Eliot, AzureDoom, Hydos, DerToaster, Tslat, KyoSleep"
+	],
+	"contact": {
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/geckolib",
+		"issues": "https://github.com/bernie-g/geckolib/issues",
+		"sources": "https://github.com/bernie-g/geckolib"
+	},
+	"license": "MIT",
+	"icon": "liolib.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.liopyu.example.LioLibMod"
+		],
+		"client": [
+			"net.liopyu.example.ClientListener"
+		]
+	},
+	"mixins": [
+		"liolib.mixins.json"
+	],
+	"accessWidener": "liolib.aw",
+	"depends": {
+   		"fabricloader": ">=0.14.10",
+		"fabric": "*",
+		"java": ">=17",
+		"minecraft": ">=1.19.2"
+	}
+}

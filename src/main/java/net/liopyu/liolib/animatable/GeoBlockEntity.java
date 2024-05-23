@@ -1,9 +1,9 @@
 package net.liopyu.liolib.animatable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.PacketDistributor;
 import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimatableManager;
@@ -12,12 +12,12 @@ import net.liopyu.liolib.network.SerializableDataTicket;
 import net.liopyu.liolib.network.packet.BlockEntityAnimDataSyncPacket;
 import net.liopyu.liolib.network.packet.BlockEntityAnimTriggerPacket;
 import net.liopyu.liolib.util.RenderUtils;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * The {@link GeoAnimatable} interface specific to {@link BlockEntity BlockEntities}
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Block-Animations">GeckoLib Wiki - Block Animations</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Block-Animations">LioLib Wiki - Block Animations</a>
  */
 public interface GeoBlockEntity extends GeoAnimatable {
 	/**
@@ -54,7 +54,8 @@ public interface GeoBlockEntity extends GeoAnimatable {
 		else {
 			BlockPos pos = blockEntity.getBlockPos();
 
-			GeckoLibNetwork.send(new BlockEntityAnimDataSyncPacket<>(pos, dataTicket, data), PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(pos)));
+			BlockEntityAnimDataSyncPacket<D> blockEntityAnimDataSyncPacket = new BlockEntityAnimDataSyncPacket<>(pos, dataTicket, data);
+			GeckoLibNetwork.sendToEntitiesTrackingChunk(blockEntityAnimDataSyncPacket, (ServerLevel) level, pos);
 		}
 	}
 
@@ -80,7 +81,8 @@ public interface GeoBlockEntity extends GeoAnimatable {
 		else {
 			BlockPos pos = blockEntity.getBlockPos();
 
-			GeckoLibNetwork.send(new BlockEntityAnimTriggerPacket<>(pos, controllerName, animName), PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(pos)));
+			BlockEntityAnimTriggerPacket blockEntityAnimTriggerPacket = new BlockEntityAnimTriggerPacket(pos, controllerName, animName);
+			GeckoLibNetwork.sendToEntitiesTrackingChunk(blockEntityAnimTriggerPacket, (ServerLevel) level, pos);
 		}
 	}
 

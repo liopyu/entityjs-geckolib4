@@ -1,40 +1,38 @@
 package net.liopyu.example.registry;
 
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.liopyu.liolib.LioLib;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
-import net.liopyu.example.entity.*;
-import net.liopyu.liolib.LioLib;
+import net.liopyu.example.entity.BatEntity;
+import net.liopyu.example.entity.BikeEntity;
+import net.liopyu.example.entity.CoolKidEntity;
+import net.liopyu.example.entity.FakeGlassEntity;
+import net.liopyu.example.entity.DynamicExampleEntity;
+import net.liopyu.example.entity.ParasiteEntity;
+import net.liopyu.example.entity.RaceCarEntity;
 
-public final class EntityRegistry {
-	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES,
-			LioLib.MOD_ID);
+public class EntityRegistry {
 
-	public static final RegistryObject<EntityType<BatEntity>> BAT = registerMob("bat", BatEntity::new,
-			0.7f, 1.3f, 0x1F1F1F, 0x0D0D0D);
-	public static final RegistryObject<EntityType<BikeEntity>> BIKE = registerMob("bike", BikeEntity::new,
-			0.5f, 0.6f, 0xD3E3E6, 0xE9F1F5);
-	public static final RegistryObject<EntityType<RaceCarEntity>> RACE_CAR = registerMob("race_car", RaceCarEntity::new,
-			1.5f, 1.5f, 0x9E1616, 0x595959);
-	public static final RegistryObject<EntityType<ParasiteEntity>> PARASITE = registerMob("parasite", ParasiteEntity::new,
-			1.5f, 1.5f, 0x302219, 0xACACAC);
-	public static final RegistryObject<EntityType<DynamicExampleEntity>> MUTANT_ZOMBIE = registerMob("mutant_zombie", DynamicExampleEntity::new,
-	0.5f, 1.9f, 0x3C6236, 0x579989);
-	public static final RegistryObject<EntityType<FakeGlassEntity>> FAKE_GLASS = registerMob("fake_glass", FakeGlassEntity::new,
-			1, 1, 0xDD0000, 0xD8FFF7);
-	public static final RegistryObject<EntityType<CoolKidEntity>> COOL_KID = registerMob("cool_kid", CoolKidEntity::new,
-			0.45f, 1f, 0x5F2A31, 0x6F363E);
-    public static final RegistryObject<EntityType<DynamicExampleEntity>> GREMLIN = registerMob("gremlin", DynamicExampleEntity::new,
-            0.5f, 1.9f, 0x505050, 0x606060);
+    public static final EntityType<BatEntity> BAT = registerMob("bat", BatEntity::new, 0.7f, 1.3f);
+    public static final EntityType<BikeEntity> BIKE = registerMob("bike", BikeEntity::new, 0.5f, 0.6f);
 
-	public static <T extends Mob> RegistryObject<EntityType<T>> registerMob(String name, EntityType.EntityFactory<T> entity,
-																			float width, float height, int primaryEggColor, int secondaryEggColor) {
-		RegistryObject<EntityType<T>> entityType = ENTITIES.register(name,
-				() -> EntityType.Builder.of(entity, MobCategory.CREATURE).sized(width, height).build(name));
+    public static final EntityType<RaceCarEntity> RACE_CAR = registerMob("race_car", RaceCarEntity::new, 1.5f, 1.5f);
+    public static final EntityType<ParasiteEntity> PARASITE = registerMob("parasite", ParasiteEntity::new, 1.5f, 1.5f);
 
-		return entityType;
-	}
+    public static final EntityType<DynamicExampleEntity> GREMLIN = registerMob("gremlin", DynamicExampleEntity::new, 0.5f, 1.9f);
+    public static final EntityType<DynamicExampleEntity> MUTANT_ZOMBIE = registerMob("mutant_zombie", DynamicExampleEntity::new, 0.5f, 1.9f);
+    public static final EntityType<FakeGlassEntity> FAKE_GLASS = registerMob("fake_glass", FakeGlassEntity::new, 1, 1);
+
+    public static final EntityType<CoolKidEntity> COOL_KID = registerMob("cool_kid", CoolKidEntity::new, 0.45f, 1f);
+
+    public static <T extends Mob> EntityType<T> registerMob(String name, EntityType.EntityFactory<T> entity,
+                                                            float width, float height) {
+        return Registry.register(Registry.ENTITY_TYPE,
+                new ResourceLocation(LioLib.MOD_ID, name),FabricEntityTypeBuilder.create(MobCategory.CREATURE, entity).dimensions(EntityDimensions.scalable(width, height)).build());
+    }
 }

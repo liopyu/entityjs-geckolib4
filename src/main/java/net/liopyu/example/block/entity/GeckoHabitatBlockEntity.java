@@ -1,9 +1,9 @@
 package net.liopyu.example.block.entity;
 
+import net.liopyu.example.client.model.block.GeckoHabitatModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.liopyu.example.client.model.block.GeckoHabitatModel;
 import net.liopyu.example.client.renderer.block.GeckoHabitatBlockRenderer;
 import net.liopyu.example.registry.BlockEntityRegistry;
 import net.liopyu.liolib.animatable.GeoBlockEntity;
@@ -14,7 +14,7 @@ import net.liopyu.liolib.core.animation.AnimationController;
 import net.liopyu.liolib.util.GeckoLibUtil;
 
 /**
- * Example {@link BlockEntity} implementation using a GeckoLib model.
+ * Example {@link BlockEntity} implementation using a LioLib model.
  * @see GeckoHabitatModel
  * @see GeckoHabitatBlockRenderer
  */
@@ -22,7 +22,7 @@ public class GeckoHabitatBlockEntity extends BlockEntity implements GeoBlockEnti
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 	public GeckoHabitatBlockEntity(BlockPos pos, BlockState state) {
-		super(BlockEntityRegistry.GECKO_HABITAT.get(), pos, state);
+		super(BlockEntityRegistry.GECKO_HABITAT, pos, state);
 	}
 
 	// We just want a permanent idle animation happening here

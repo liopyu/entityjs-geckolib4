@@ -1,6 +1,7 @@
 package net.liopyu.liolib.cache.object;
 
-import org.joml.Vector3f;
+
+import com.mojang.math.Vector3f;
 
 /**
  * Vertex data holder

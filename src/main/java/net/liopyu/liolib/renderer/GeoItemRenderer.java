@@ -4,49 +4,46 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import org.joml.Matrix4f;
 import net.liopyu.liolib.animatable.GeoItem;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.cache.object.GeoBone;
-import net.liopyu.liolib.cache.texture.AnimatableTexture;
 import net.liopyu.liolib.constant.DataTickets;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimationState;
 import net.liopyu.liolib.event.GeoRenderEvent;
 import net.liopyu.liolib.model.GeoModel;
 import net.liopyu.liolib.renderer.layer.GeoRenderLayer;
-import net.liopyu.liolib.renderer.layer.GeoRenderLayersContainer;
 import net.liopyu.liolib.util.RenderUtils;
 
 import java.util.List;
 
 /**
  * Base {@link GeoRenderer} class for rendering {@link Item Items} specifically.<br>
- * All items added to be rendered by GeckoLib should use an instance of this class.
+ * All items added to be rendered by LioLib should use an instance of this class.
  */
 public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntityWithoutLevelRenderer implements GeoRenderer<T> {
-	protected final GeoRenderLayersContainer<T> renderLayers = new GeoRenderLayersContainer<>(this);
+	protected final List<GeoRenderLayer<T>> renderLayers = new ObjectArrayList<>();
 	protected final GeoModel<T> model;
 
 	protected ItemStack currentItemStack;
-	protected ItemDisplayContext renderPerspective;
+	protected ItemTransforms.TransformType renderPerspective;
 	protected T animatable;
 	protected float scaleWidth = 1;
 	protected float scaleHeight = 1;
-	protected boolean useEntityGuiLighting = false;
 
 	protected Matrix4f itemRenderTranslations = new Matrix4f();
 	protected Matrix4f modelRenderTranslations = new Matrix4f();
@@ -60,6 +57,8 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 		super(dispatcher, modelSet);
 
 		this.model = model;
+
+		fireCompileRenderLayersEvent();
 	}
 
 	/**
@@ -86,16 +85,6 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	}
 
 	/**
-	 * Mark this renderer so that it uses an alternate lighting scheme when rendering the item in GUI.<br>
-	 * This can help with improperly lit 3d models
-	 */
-	public GeoItemRenderer<T> useAlternateGuiLighting() {
-		this.useEntityGuiLighting = true;
-
-		return this;
-	}
-
-	/**
 	 * Gets the id that represents the current animatable's instance for animation purposes.
 	 * This is mostly useful for things like items, which have a single registered instance for all objects
 	 */
@@ -118,27 +107,27 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	 */
 	@Override
 	public List<GeoRenderLayer<T>> getRenderLayers() {
-		return this.renderLayers.getRenderLayers();
+		return this.renderLayers;
 	}
 
 	/**
 	 * Adds a {@link GeoRenderLayer} to this renderer, to be called after the main model is rendered each frame
 	 */
 	public GeoItemRenderer<T> addRenderLayer(GeoRenderLayer<T> renderLayer) {
-		this.renderLayers.addLayer(renderLayer);
+		this.renderLayers.add(renderLayer);
 
 		return this;
 	}
 
 	/**
-	 * Sets a scale override for this renderer, telling GeckoLib to pre-scale the model
+	 * Sets a scale override for this renderer, telling LioLib to pre-scale the model
 	 */
 	public GeoItemRenderer<T> withScale(float scale) {
 		return withScale(scale, scale);
 	}
 
 	/**
-	 * Sets a scale override for this renderer, telling GeckoLib to pre-scale the model
+	 * Sets a scale override for this renderer, telling LioLib to pre-scale the model
 	 */
 	public GeoItemRenderer<T> withScale(float scaleWidth, float scaleHeight) {
 		this.scaleWidth = scaleWidth;
@@ -155,22 +144,21 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	@Override
 	public void preRender(PoseStack poseStack, T animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue,
 						  float alpha) {
-		this.itemRenderTranslations = new Matrix4f(poseStack.last().pose());;
+		this.itemRenderTranslations = new Matrix4f(poseStack.last().pose());
 
 		scaleModelForRender(this.scaleWidth, this.scaleHeight, poseStack, animatable, model, isReRender, partialTick, packedLight, packedOverlay);
 
-		if (!isReRender)
-			poseStack.translate(0.5f, 0.51f, 0.5f);
+		poseStack.translate(0.5f, 0.51f, 0.5f);
 	}
 
 	@Override
-	public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack,
+	public void renderByItem(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack,
 			MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
 		this.animatable = (T)stack.getItem();
 		this.currentItemStack = stack;
 		this.renderPerspective = transformType;
 
-		if (transformType == ItemDisplayContext.GUI) {
+		if (transformType == ItemTransforms.TransformType.GUI) {
 			renderInGui(transformType, poseStack, bufferSource, packedLight, packedOverlay);
 		}
 		else {
@@ -184,25 +172,18 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 
 	/**
 	 * Wrapper method to handle rendering the item in a GUI context
-	 * (defined by {@link ItemDisplayContext#GUI} normally).<br>
+	 * (defined by {@link net.minecraft.client.renderer.block.model.ItemTransforms.TransformType#GUI} normally).<br>
 	 * Just includes some additional required transformations and settings.
 	 */
-	protected void renderInGui(ItemDisplayContext transformType, PoseStack poseStack,
+	protected void renderInGui(ItemTransforms.TransformType transformType, PoseStack poseStack,
 							   MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
 		MultiBufferSource.BufferSource defaultBufferSource = bufferSource instanceof MultiBufferSource.BufferSource bufferSource2 ?
-				bufferSource2 : Minecraft.getInstance().levelRenderer.renderBuffers.bufferSource();
+				bufferSource2 : Minecraft.getInstance().renderBuffers().bufferSource();
 		RenderType renderType = getRenderType(this.animatable, getTextureLocation(this.animatable), defaultBufferSource, Minecraft.getInstance().getFrameTime());
 		VertexConsumer buffer = ItemRenderer.getFoilBufferDirect(bufferSource, renderType, true, this.currentItemStack != null && this.currentItemStack.hasFoil());
 
 		poseStack.pushPose();
-
-		if (this.useEntityGuiLighting) {
-			Lighting.setupForEntityInInventory();
-		}
-		else {
-			Lighting.setupForFlatItems();
-		}
-
+		Lighting.setupForFlatItems();
 		defaultRender(poseStack, this.animatable, defaultBufferSource, renderType, buffer,
 				0, Minecraft.getInstance().getFrameTime(), packedLight);
 		defaultBufferSource.endBatch();
@@ -219,6 +200,7 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	public void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, RenderType renderType,
 							   MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick,
 							   int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+		poseStack.pushPose();
 
 		if (!isReRender) {
 			AnimationState<T> animationState = new AnimationState<>(animatable, 0, 0, partialTick, false);
@@ -227,15 +209,16 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 			animationState.setData(DataTickets.TICK, animatable.getTick(this.currentItemStack));
 			animationState.setData(DataTickets.ITEM_RENDER_PERSPECTIVE, this.renderPerspective);
 			animationState.setData(DataTickets.ITEMSTACK, this.currentItemStack);
-			animatable.getAnimatableInstanceCache().getManagerForId(instanceId).setData(DataTickets.ITEM_RENDER_PERSPECTIVE, this.renderPerspective);
 			this.model.addAdditionalStateData(animatable, instanceId, animationState::setData);
 			this.model.handleAnimations(animatable, instanceId, animationState);
 		}
 
 		this.modelRenderTranslations = new Matrix4f(poseStack.last().pose());
 
+		RenderSystem.setShaderTexture(0, getTextureLocation(animatable));
 		GeoRenderer.super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick,
 				packedLight, packedOverlay, red, green, blue, alpha);
+		poseStack.popPose();
 	}
 
 	/**
@@ -254,23 +237,23 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 		GeoRenderer.super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue,
 				alpha);
 	}
-
-	/**
-	 * Update the current frame of a {@link AnimatableTexture potentially animated} texture used by this GeoRenderer.<br>
-	 * This should only be called immediately prior to rendering, and only
-	 * @see AnimatableTexture#setAndUpdate
-	 */
+	
+    /**
+     * Scales the {@link PoseStack} in preparation for rendering the model, excluding when re-rendering the model as part of a {@link GeoRenderLayer} or external render call.<br>
+     * Override and call super with modified scale values as needed to further modify the scale of the model (E.G. child entities)
+     */
 	@Override
-	public void updateAnimatedTextureFrame(T animatable) {
-		AnimatableTexture.setAndUpdate(getTextureLocation(animatable));
-	}
+    public void scaleModelForRender(float widthScale, float heightScale, PoseStack poseStack, T animatable, BakedGeoModel model, boolean isReRender, float partialTick, int packedLight, int packedOverlay) {
+        if (!isReRender && (widthScale != 1 || heightScale != 1))
+            poseStack.scale(this.scaleWidth, this.scaleHeight, this.scaleWidth);
+    }
 
 	/**
 	 * Create and fire the relevant {@code CompileLayers} event hook for this renderer
 	 */
 	@Override
 	public void fireCompileRenderLayersEvent() {
-		MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Item.CompileRenderLayers(this));
+		GeoRenderEvent.Item.CompileRenderLayers.EVENT.invoker().handle(new GeoRenderEvent.Item.CompileRenderLayers(this));
 	}
 
 	/**
@@ -279,7 +262,7 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	 */
 	@Override
 	public boolean firePreRenderEvent(PoseStack poseStack, BakedGeoModel model, MultiBufferSource bufferSource, float partialTick, int packedLight) {
-		return !MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Item.Pre(this, poseStack, model, bufferSource, partialTick, packedLight));
+		return GeoRenderEvent.Item.Pre.EVENT.invoker().handle(new GeoRenderEvent.Item.Pre(this, poseStack, model, bufferSource, partialTick, packedLight));
 	}
 
 	/**
@@ -287,6 +270,6 @@ public class GeoItemRenderer<T extends Item & GeoAnimatable> extends BlockEntity
 	 */
 	@Override
 	public void firePostRenderEvent(PoseStack poseStack, BakedGeoModel model, MultiBufferSource bufferSource, float partialTick, int packedLight) {
-		MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Item.Post(this, poseStack, model, bufferSource, partialTick, packedLight));
+		GeoRenderEvent.Item.Post.EVENT.invoker().handle(new GeoRenderEvent.Item.Post(this, poseStack, model, bufferSource, partialTick, packedLight));
 	}
 }

@@ -2,6 +2,8 @@ package net.liopyu.liolib.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -14,32 +16,28 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import org.joml.Matrix4f;
 import net.liopyu.liolib.animatable.GeoItem;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.cache.object.GeoBone;
-import net.liopyu.liolib.cache.texture.AnimatableTexture;
 import net.liopyu.liolib.constant.DataTickets;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimationState;
 import net.liopyu.liolib.event.GeoRenderEvent;
 import net.liopyu.liolib.model.GeoModel;
 import net.liopyu.liolib.renderer.layer.GeoRenderLayer;
-import net.liopyu.liolib.renderer.layer.GeoRenderLayersContainer;
 import net.liopyu.liolib.util.RenderUtils;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Base {@link GeoRenderer} for rendering in-world armor specifically.<br>
- * All custom armor added to be rendered in-world by GeckoLib should use an instance of this class.
+ * All custom armor added to be rendered in-world by LioLib should use an instance of this class.
  * @see GeoItem
  * @param <T>
  */
 public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel implements GeoRenderer<T> {
-	protected final GeoRenderLayersContainer<T> renderLayers = new GeoRenderLayersContainer<>(this);
+	protected final List<GeoRenderLayer<T>> renderLayers = new ObjectArrayList<>();
 	protected final GeoModel<T> model;
 
 	protected T animatable;
@@ -68,7 +66,8 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 		super(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_INNER_ARMOR));
 
 		this.model = model;
-		this.young = false;
+
+		fireCompileRenderLayersEvent();
 	}
 
 	/**
@@ -131,27 +130,27 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	 */
 	@Override
 	public List<GeoRenderLayer<T>> getRenderLayers() {
-		return this.renderLayers.getRenderLayers();
+		return this.renderLayers;
 	}
 
 	/**
 	 * Adds a {@link GeoRenderLayer} to this renderer, to be called after the main model is rendered each frame
 	 */
 	public GeoArmorRenderer<T> addRenderLayer(GeoRenderLayer<T> renderLayer) {
-		this.renderLayers.addLayer(renderLayer);
+		this.renderLayers.add(renderLayer);
 
 		return this;
 	}
 
 	/**
-	 * Sets a scale override for this renderer, telling GeckoLib to pre-scale the model
+	 * Sets a scale override for this renderer, telling LioLib to pre-scale the model
 	 */
 	public GeoArmorRenderer<T> withScale(float scale) {
 		return withScale(scale, scale);
 	}
 
 	/**
-	 * Sets a scale override for this renderer, telling GeckoLib to pre-scale the model
+	 * Sets a scale override for this renderer, telling LioLib to pre-scale the model
 	 */
 	public GeoArmorRenderer<T> withScale(float scaleWidth, float scaleHeight) {
 		this.scaleWidth = scaleWidth;
@@ -254,7 +253,7 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 		applyBaseModel(this.baseModel);
 		grabRelevantBones(getGeoModel().getBakedModel(getGeoModel().getModelResource(this.animatable)));
 		applyBaseTransformations(this.baseModel);
-		scaleModelForBaby(poseStack, animatable, partialTick, isReRender);
+
 		scaleModelForRender(this.scaleWidth, this.scaleHeight, poseStack, animatable, model, isReRender, partialTick, packedLight, packedOverlay);
 
 		if (!(this.currentEntity instanceof GeoAnimatable))
@@ -265,10 +264,10 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight,
 							   int packedOverlay, float red, float green, float blue, float alpha) {
 		Minecraft mc = Minecraft.getInstance();
-		MultiBufferSource bufferSource = mc.levelRenderer.renderBuffers.bufferSource();
+		MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
 
 		if (mc.levelRenderer.shouldShowEntityOutlines() && mc.shouldEntityAppearGlowing(this.currentEntity))
-			bufferSource = mc.levelRenderer.renderBuffers.outlineBufferSource();
+			bufferSource = mc.renderBuffers().outlineBufferSource();
 
 		float partialTick = mc.getFrameTime();
 		RenderType renderType = getRenderType(this.animatable, getTextureLocation(this.animatable), bufferSource, partialTick);
@@ -315,7 +314,7 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	public void renderRecursively(PoseStack poseStack, T animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
 								  int packedOverlay, float red, float green, float blue, float alpha) {
 		if (bone.isTrackingMatrices()) {
-			Matrix4f poseState = new Matrix4f(poseStack.last().pose());;
+			Matrix4f poseState = new Matrix4f(poseStack.last().pose());
 
 			bone.setModelSpaceMatrix(RenderUtils.invertAndMultiplyMatrices(poseState, this.modelRenderTranslations));
 			bone.setLocalSpaceMatrix(RenderUtils.invertAndMultiplyMatrices(poseState, this.entityRenderTranslations));
@@ -509,30 +508,6 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	}
 
 	/**
-	 * Apply custom scaling to account for {@link net.minecraft.client.model.AgeableListModel AgeableListModel} baby models
-	 */
-	public void scaleModelForBaby(PoseStack poseStack, T animatable, float partialTick, boolean isReRender) {
-		if (!this.young || isReRender)
-			return;
-
-		if (this.currentSlot == EquipmentSlot.HEAD) {
-			if (this.baseModel.scaleHead) {
-				float headScale = 1.5f / this.baseModel.babyHeadScale;
-
-				poseStack.scale(headScale, headScale, headScale);
-			}
-
-			poseStack.translate(0, this.baseModel.babyYHeadOffset / 16f, this.baseModel.babyZHeadOffset / 16f);
-		}
-		else {
-			float bodyScale = 1 / this.baseModel.babyBodyScale;
-
-			poseStack.scale(bodyScale, bodyScale, bodyScale);
-			poseStack.translate(0, this.baseModel.bodyYOffset / 16f, 0);
-		}
-	}
-
-	/**
 	 * Sets a bone as visible or hidden, with nullability
 	 */
 	protected void setBoneVisible(@Nullable GeoBone bone, boolean visible) {
@@ -541,24 +516,23 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 
 		bone.setHidden(!visible);
 	}
-
-	/**
-	 * Update the current frame of a {@link AnimatableTexture potentially animated} texture used by this GeoRenderer.<br>
-	 * This should only be called immediately prior to rendering, and only
-	 * @see AnimatableTexture#setAndUpdate
-	 */
+	
+    /**
+     * Scales the {@link PoseStack} in preparation for rendering the model, excluding when re-rendering the model as part of a {@link GeoRenderLayer} or external render call.<br>
+     * Override and call super with modified scale values as needed to further modify the scale of the model (E.G. child entities)
+     */
 	@Override
-	public void updateAnimatedTextureFrame(T animatable) {
-		if (this.currentEntity != null)
-			AnimatableTexture.setAndUpdate(getTextureLocation(animatable));
-	}
+    public void scaleModelForRender(float widthScale, float heightScale, PoseStack poseStack, T animatable, BakedGeoModel model, boolean isReRender, float partialTick, int packedLight, int packedOverlay) {
+        if (!isReRender && (widthScale != 1 || heightScale != 1))
+            poseStack.scale(this.scaleWidth, this.scaleHeight, this.scaleWidth);
+    }
 
 	/**
 	 * Create and fire the relevant {@code CompileLayers} event hook for this renderer
 	 */
 	@Override
 	public void fireCompileRenderLayersEvent() {
-		MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Armor.CompileRenderLayers(this));
+		GeoRenderEvent.Armor.CompileRenderLayers.EVENT.invoker().handle(new GeoRenderEvent.Armor.CompileRenderLayers(this));
 	}
 
 	/**
@@ -567,7 +541,7 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	 */
 	@Override
 	public boolean firePreRenderEvent(PoseStack poseStack, BakedGeoModel model, MultiBufferSource bufferSource, float partialTick, int packedLight) {
-		return !MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Armor.Pre(this, poseStack, model, bufferSource, partialTick, packedLight));
+		return GeoRenderEvent.Armor.Pre.EVENT.invoker().handle(new GeoRenderEvent.Armor.Pre(this, poseStack, model, bufferSource, partialTick, packedLight));
 	}
 
 	/**
@@ -575,6 +549,6 @@ public class GeoArmorRenderer<T extends Item & GeoItem> extends HumanoidModel im
 	 */
 	@Override
 	public void firePostRenderEvent(PoseStack poseStack, BakedGeoModel model, MultiBufferSource bufferSource, float partialTick, int packedLight) {
-		MinecraftForge.EVENT_BUS.post(new GeoRenderEvent.Armor.Post(this, poseStack, model, bufferSource, partialTick, packedLight));
+		GeoRenderEvent.Armor.Post.EVENT.invoker().handle(new GeoRenderEvent.Armor.Post(this, poseStack, model, bufferSource, partialTick, packedLight));
 	}
 }

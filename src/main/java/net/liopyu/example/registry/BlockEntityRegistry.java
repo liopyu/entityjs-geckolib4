@@ -1,21 +1,21 @@
 package net.liopyu.example.registry;
 
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.liopyu.example.block.entity.FertilizerBlockEntity;
 import net.liopyu.example.block.entity.GeckoHabitatBlockEntity;
 import net.liopyu.liolib.LioLib;
+import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.liopyu.liolib.LioLib;
 
 public final class BlockEntityRegistry {
-	public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister
-			.create(ForgeRegistries.BLOCK_ENTITY_TYPES, LioLib.MOD_ID);
 
-	public static final RegistryObject<BlockEntityType<GeckoHabitatBlockEntity>> GECKO_HABITAT = TILES
-			.register("habitat", () -> BlockEntityType.Builder
-					.of(GeckoHabitatBlockEntity::new, BlockRegistry.GECKO_HABITAT.get()).build(null));
-	public static final RegistryObject<BlockEntityType<FertilizerBlockEntity>> FERTILIZER_BLOCK = TILES
-			.register("fertilizer", () -> BlockEntityType.Builder
-					.of(FertilizerBlockEntity::new, BlockRegistry.FERTILIZER.get()).build(null));
+	public static final BlockEntityType<GeckoHabitatBlockEntity> GECKO_HABITAT = Registry.register(Registry.BLOCK_ENTITY_TYPE,
+			LioLib.MOD_ID + ":habitat",
+			FabricBlockEntityTypeBuilder.create(GeckoHabitatBlockEntity::new, BlockRegistry.GECKO_HABITAT_BLOCK).build(null));
+
+	public static final BlockEntityType<FertilizerBlockEntity> FERTILIZER_BLOCK = Registry.register(Registry.BLOCK_ENTITY_TYPE,
+			LioLib.MOD_ID + ":fertilizer",
+			FabricBlockEntityTypeBuilder.create(FertilizerBlockEntity::new, BlockRegistry.FERTILIZER_BLOCK).build(null));
 }

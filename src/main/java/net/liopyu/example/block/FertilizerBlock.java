@@ -1,5 +1,8 @@
 package net.liopyu.example.block;
 
+import net.liopyu.example.block.entity.FertilizerBlockEntity;
+import net.liopyu.example.client.model.block.FertilizerModel;
+import net.liopyu.liolib.LioLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -13,30 +16,29 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.liopyu.example.block.entity.FertilizerBlockEntity;
+import net.minecraft.world.level.material.Material;
 import net.liopyu.example.client.renderer.block.FertilizerBlockRenderer;
 import net.liopyu.example.registry.BlockEntityRegistry;
-import net.liopyu.liolib.LioLib;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Example animated block using GeckoLib animations.<br>
+ * Example animated block using LioLib animations.<br>
  * There's nothing to see here since the {@link Block} class itself has little to do with animations
- * @see net.liopyu.example.client.model.block.FertilizerModel
+ * @see FertilizerModel
  * @see FertilizerBlockEntity
  * @see FertilizerBlockRenderer
  */
 public class FertilizerBlock extends DirectionalBlock implements EntityBlock {
 	public FertilizerBlock() {
-		super(Properties.of().noOcclusion());
+		super(Properties.of(Material.STONE).noOcclusion());
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return BlockEntityRegistry.FERTILIZER_BLOCK.get().create(pos, state);
+		return BlockEntityRegistry.FERTILIZER_BLOCK.create(pos, state);
 	}
 
 	@Override

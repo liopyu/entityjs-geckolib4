@@ -17,7 +17,7 @@ public abstract class AnimatableInstanceCache {
 
 	/**
 	 * This creates or gets the cached animatable manager for any unique ID.<br>
-	 * For itemstacks, this is typically a reserved ID provided by GeckoLib. {@code Entities} and {@code BlockEntities}
+	 * For itemstacks, this is typically a reserved ID provided by LioLib. {@code Entities} and {@code BlockEntities}
 	 * pass their position or int ID. They typically only have one {@link AnimatableManager} per cache anyway
 	 * @param uniqueId A unique ID. For every ID the same animation manager
 	 *                 will be returned.

@@ -1,10 +1,13 @@
 package net.liopyu.example.entity;
 
+import net.liopyu.example.client.model.entity.BikeModel;
+import net.liopyu.example.client.renderer.entity.BikeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Animal;
@@ -12,20 +15,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.liopyu.example.client.renderer.entity.BikeRenderer;
 import net.liopyu.liolib.animatable.GeoEntity;
 import net.liopyu.liolib.constant.DefaultAnimations;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.util.GeckoLibUtil;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * Example {@link GeoAnimatable} implementation of an entity
  * @see BikeRenderer
- * @see net.liopyu.example.client.model.entity.BikeModel
+ * @see BikeModel
  */
 public class BikeEntity extends Animal implements GeoEntity {
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -82,8 +84,8 @@ public class BikeEntity extends Animal implements GeoEntity {
 	// Get the controlling passenger
 	@Nullable
 	@Override
-	public LivingEntity getControllingPassenger() {
-		return getFirstPassenger() instanceof LivingEntity entity ? entity : null;
+	public Entity getControllingPassenger() {
+		return getFirstPassenger();
 	}
 
 	@Override

@@ -1,13 +1,13 @@
 package net.liopyu.example.client.renderer.item;
 
-import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.item.JackInTheBoxItem;
+import net.minecraft.resources.ResourceLocation;
 import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.model.DefaultedItemGeoModel;
 import net.liopyu.liolib.renderer.GeoItemRenderer;
 
 /**
- * Example {@link net.liopyu.liolib.renderer.GeoItemRenderer} for {@link JackInTheBoxItem}
+ * Example {@link GeoItemRenderer} for {@link JackInTheBoxItem}
  */
 public class JackInTheBoxRenderer extends GeoItemRenderer<JackInTheBoxItem> {
 	public JackInTheBoxRenderer() {

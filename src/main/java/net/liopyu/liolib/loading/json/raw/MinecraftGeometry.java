@@ -7,7 +7,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.util.GsonHelper;
 import net.liopyu.liolib.util.JsonUtil;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Container class for generic geometry information, only used in deserialization at startup

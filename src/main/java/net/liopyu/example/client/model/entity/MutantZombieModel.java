@@ -4,7 +4,6 @@ import net.liopyu.liolib.LioLib;
 import net.minecraft.resources.ResourceLocation;
 import net.liopyu.example.client.renderer.entity.MutantZombieRenderer;
 import net.liopyu.example.entity.DynamicExampleEntity;
-import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.model.DefaultedEntityGeoModel;
 import net.liopyu.liolib.model.GeoModel;
 

@@ -2,12 +2,11 @@ package net.liopyu.example.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.liopyu.example.client.model.entity.BatModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
-import org.joml.Vector3d;
-import net.liopyu.example.client.model.entity.BatModel;
 import net.liopyu.example.entity.BatEntity;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.renderer.GeoEntityRenderer;
@@ -29,25 +28,26 @@ public class BatRenderer extends GeoEntityRenderer<BatEntity> {
 
 	// Add some particles around the ear when rendering
 	@Override
-	public void renderFinal(PoseStack poseStack, BatEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+	public void postRender(PoseStack poseStack, BatEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
+						   int packedOverlay, float red, float green, float blue, float alpha) {
 		if (this.currentTick < 0 || this.currentTick != animatable.tickCount) {
 			this.currentTick = animatable.tickCount;
 
 			// Find the earbone and use it as the point of reference
 			this.model.getBone("leftear").ifPresent(ear -> {
 				RandomSource rand = animatable.getRandom();
-				Vector3d earPos = ear.getWorldPosition();
 
 				animatable.getCommandSenderWorld().addParticle(ParticleTypes.PORTAL,
-						earPos.x(),
-						earPos.y(),
-						earPos.z(),
+						ear.getWorldPosition().x,
+						ear.getWorldPosition().y,
+						ear.getWorldPosition().z,
 						rand.nextDouble() - 0.5D,
 						-rand.nextDouble(),
 						rand.nextDouble() - 0.5D);
 			});
 		}
 
-		super.renderFinal(poseStack, animatable, model, bufferSource, buffer, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+		super.postRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight,
+				packedOverlay, red, green, blue, alpha);
 	}
 }

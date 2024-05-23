@@ -2,7 +2,7 @@ package net.liopyu.liolib.loading.object;
 
 import net.liopyu.liolib.core.animation.Animation;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 /**

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * {@link Gson} {@link JsonDeserializer} for {@link net.liopyu.liolib.loading.object.BakedAnimations}.<br>
+ * {@link com.google.gson.Gson} {@link JsonDeserializer} for {@link net.liopyu.liolib.loading.object.BakedAnimations}.<br>
  * Acts as the deserialization interface for {@code BakedAnimations}
  */
 public class BakedAnimationsAdapter implements JsonDeserializer<BakedAnimations> {
@@ -104,19 +104,11 @@ public class BakedAnimationsAdapter implements JsonDeserializer<BakedAnimations>
 					String timestamp = entry.getKey();
 					double time = NumberUtils.isCreatable(timestamp) ? Double.parseDouble(timestamp) : 0;
 
-					if (entryObj.has("pre")) {
-						JsonElement postElement = entryObj.get("pre");
-						JsonArray array = postElement.isJsonArray() ? postElement.getAsJsonArray() : GsonHelper.getAsJsonArray(postElement.getAsJsonObject(), "vector");
+					if (entryObj.has("pre"))
+						list.add(Pair.of(timestamp, GsonHelper.getAsJsonArray(entryObj, "pre")));
 
-						list.add(Pair.of(timestamp, array));
-					}
-
-					if (entryObj.has("post")) {
-						JsonElement postElement = entryObj.get("post");
-						JsonArray array = postElement.isJsonArray() ? postElement.getAsJsonArray() : GsonHelper.getAsJsonArray(postElement.getAsJsonObject(), "vector");
-
-						list.add(Pair.of(String.valueOf(time + 0.0000001), array));
-					}
+					if (entryObj.has("post"))
+						list.add(Pair.of(String.valueOf(time + 0.0000001), GsonHelper.getAsJsonArray(entryObj, "post")));
 
 					continue;
 				}

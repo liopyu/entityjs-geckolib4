@@ -10,8 +10,8 @@ import net.minecraft.world.level.Level;
 import net.liopyu.liolib.animatable.GeoEntity;
 import net.liopyu.liolib.constant.DefaultAnimations;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.util.GeckoLibUtil;
 
 /**

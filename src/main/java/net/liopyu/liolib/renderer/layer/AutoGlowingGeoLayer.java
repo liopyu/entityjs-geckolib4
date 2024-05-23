@@ -14,7 +14,7 @@ import net.liopyu.liolib.renderer.GeoRenderer;
 /**
  * {@link GeoRenderLayer} for rendering the auto-generated glowlayer functionality implemented by Geckolib using
  * the <i>_glowing</i> appendixed texture files.
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Emissive-Textures-Glow-Layer">GeckoLib Wiki - Glow Layers</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Emissive-Textures-Glow-Layer">LioLib Wiki - Glow Layers</a>
  */
 public class AutoGlowingGeoLayer<T extends GeoAnimatable> extends GeoRenderLayer<T> {
 	public AutoGlowingGeoLayer(GeoRenderer<T> renderer) {

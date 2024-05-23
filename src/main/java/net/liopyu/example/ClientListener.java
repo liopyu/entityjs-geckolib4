@@ -1,50 +1,58 @@
-/*
- * Copyright (c) 2020.
- * Author: Bernie G. (Gecko)
- */
-
 package net.liopyu.example;
 
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.impl.blockrenderlayer.BlockRenderLayerMapImpl;
 import net.liopyu.example.client.renderer.block.FertilizerBlockRenderer;
 import net.liopyu.example.client.renderer.block.GeckoHabitatBlockRenderer;
-import net.liopyu.example.client.renderer.entity.*;
 import net.liopyu.example.registry.BlockEntityRegistry;
 import net.liopyu.example.registry.BlockRegistry;
 import net.liopyu.example.registry.EntityRegistry;
-import net.liopyu.liolib.LioLib;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.entity.EntityType;
+import net.liopyu.example.client.renderer.entity.BatRenderer;
+import net.liopyu.example.client.renderer.entity.BikeRenderer;
+import net.liopyu.example.client.renderer.entity.CoolKidRenderer;
+import net.liopyu.example.client.renderer.entity.FakeGlassRenderer;
+import net.liopyu.example.client.renderer.entity.GremlinRenderer;
+import net.liopyu.example.client.renderer.entity.MutantZombieRenderer;
+import net.liopyu.example.client.renderer.entity.ParasiteRenderer;
+import net.liopyu.example.client.renderer.entity.RaceCarRenderer;
+import net.liopyu.example.client.renderer.entity.ReplacedCreeperRenderer;
+import net.liopyu.liolib.network.GeckoLibNetwork;
 
-@Mod.EventBusSubscriber(modid = LioLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public final class ClientListener {
-	@SubscribeEvent
-	public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-		if (LioLibMod.shouldRegisterExamples()) {
-			event.registerEntityRenderer(EntityRegistry.BAT.get(), BatRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.BIKE.get(), BikeRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.RACE_CAR.get(), RaceCarRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.PARASITE.get(), ParasiteRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.COOL_KID.get(), CoolKidRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.MUTANT_ZOMBIE.get(), MutantZombieRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.GREMLIN.get(), GremlinRenderer::new);
-			event.registerEntityRenderer(EntityRegistry.FAKE_GLASS.get(), FakeGlassRenderer::new);
+public final class ClientListener implements ClientModInitializer {
 
-			event.registerEntityRenderer(EntityType.CREEPER, ReplacedCreeperRenderer::new);
-
-			event.registerBlockEntityRenderer(BlockEntityRegistry.GECKO_HABITAT.get(), context -> new GeckoHabitatBlockRenderer());
-			event.registerBlockEntityRenderer(BlockEntityRegistry.FERTILIZER_BLOCK.get(), context -> new FertilizerBlockRenderer());
-		}
+	@Override
+	public void onInitializeClient() {
+		if (LioLibMod.shouldRegisterExamples())
+			registerRenderers();
+		registerNetwork();
 	}
 
-	@SubscribeEvent
-	public static void registerRenderers(final FMLClientSetupEvent event) {
-		if (LioLibMod.shouldRegisterExamples())
-			ItemBlockRenderTypes.setRenderLayer(BlockRegistry.GECKO_HABITAT.get(), RenderType.translucent());
+	private static void registerRenderers() {
+		EntityRendererRegistry.register(EntityRegistry.BAT, BatRenderer::new);
+		EntityRendererRegistry.register(EntityRegistry.BIKE, BikeRenderer::new);
+		EntityRendererRegistry.register(EntityRegistry.RACE_CAR, RaceCarRenderer::new);
+
+		EntityRendererRegistry.register(EntityRegistry.PARASITE, ParasiteRenderer::new);
+		EntityRendererRegistry.register(EntityRegistry.COOL_KID, CoolKidRenderer::new);
+		EntityRendererRegistry.register(EntityRegistry.MUTANT_ZOMBIE, MutantZombieRenderer::new);
+		EntityRendererRegistry.register(EntityRegistry.GREMLIN, GremlinRenderer::new);
+
+		EntityRendererRegistry.register(EntityRegistry.FAKE_GLASS, FakeGlassRenderer::new);
+		EntityRendererRegistry.register(EntityType.CREEPER, ReplacedCreeperRenderer::new);
+
+		BlockEntityRendererRegistry.register(BlockEntityRegistry.GECKO_HABITAT,
+				context -> new GeckoHabitatBlockRenderer());
+		BlockEntityRendererRegistry.register(BlockEntityRegistry.FERTILIZER_BLOCK,
+				context -> new FertilizerBlockRenderer());
+
+		BlockRenderLayerMapImpl.INSTANCE.putBlock(BlockRegistry.GECKO_HABITAT_BLOCK, RenderType.translucent());
+	}
+
+	private static void registerNetwork() {
+		GeckoLibNetwork.registerClientReceiverPackets();
 	}
 }

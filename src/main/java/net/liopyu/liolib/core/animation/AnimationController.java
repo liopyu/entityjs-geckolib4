@@ -61,7 +61,6 @@ public class AnimationController<T extends GeoAnimatable> {
 	protected AnimationProcessor.QueuedAnimation currentAnimation;
 	protected State animationState = State.STOPPED;
 	protected double tickOffset;
-	protected double lastPollTime = -1;
 	protected Function<T, Double> animationSpeedModifier = animatable -> 1d;
 	protected Function<T, EasingType> overrideEasingTypeFunction = animatable -> null;
 	private final Set<KeyFrameData> executedKeyFrames = new ObjectOpenHashSet<>();
@@ -203,7 +202,7 @@ public class AnimationController<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Tells the AnimationController that you want to receive the {@link AnimationStateHandler}
+	 * Tells the AnimationController that you want to receive the {@link AnimationController.AnimationStateHandler}
 	 * while a triggered animation is playing.<br>
 	 * <br>
 	 * This has no effect if no triggered animation has been registered, or one isn't currently playing.<br>
@@ -275,21 +274,10 @@ public class AnimationController<T extends GeoAnimatable> {
 	}
 
 	/**
-	 * Overrides the animation transition time for the controller<br>
-	 * Deprecated, use {@link AnimationController#transitionLength(int)}
-	 */
-	@Deprecated(forRemoval = true)
-	public void setTransitionLength(int ticks) {
-		this.transitionLength = ticks;
-	}
-
-	/**
 	 * Overrides the animation transition time for the controller
 	 */
-	public AnimationController<T> transitionLength(int ticks) {
-		setTransitionLength(ticks);
-
-		return this;
+	public void setTransitionLength(int ticks) {
+		this.transitionLength = ticks;
 	}
 
 	/**
@@ -430,9 +418,6 @@ public class AnimationController<T extends GeoAnimatable> {
 		if (this.justStartedTransition && (this.shouldResetTick || this.justStopped)) {
 			this.justStopped = false;
 			adjustedTick = adjustTick(seekTime);
-
-			if (this.currentAnimation == null)
-				this.animationState = State.TRANSITIONING;
 		}
 		else if (this.currentAnimation == null) {
 			this.shouldResetTick = true;
@@ -449,9 +434,8 @@ public class AnimationController<T extends GeoAnimatable> {
 			processCurrentAnimation(adjustedTick, seekTime, crashWhenCantFindBone);
 		}
 		else if (this.animationState == State.TRANSITIONING) {
-			if (this.lastPollTime != seekTime && (adjustedTick == 0 || this.isJustStarting)) {
+			if (adjustedTick == 0 || this.isJustStarting) {
 				this.justStartedTransition = false;
-				this.lastPollTime = seekTime;
 				this.currentAnimation = this.animationQueue.poll();
 
 				resetEventKeyFrames();
@@ -476,9 +460,6 @@ public class AnimationController<T extends GeoAnimatable> {
 
 						continue;
 					}
-
-					if (boneSnapshot == null)
-						continue;
 
 					KeyframeStack<Keyframe<IValue>> rotationKeyFrames = boneAnimation.rotationKeyFrames();
 					KeyframeStack<Keyframe<IValue>> positionKeyFrames = boneAnimation.positionKeyFrames();
@@ -538,8 +519,7 @@ public class AnimationController<T extends GeoAnimatable> {
 				else {
 					this.animationState = State.TRANSITIONING;
 					this.shouldResetTick = true;
-					adjustedTick = adjustTick(seekTime);
-					this.currentAnimation = this.animationQueue.poll();
+					this.currentAnimation = nextAnimation;
 				}
 			}
 		}

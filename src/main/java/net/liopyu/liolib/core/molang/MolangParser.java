@@ -114,7 +114,10 @@ public class MolangParser extends MathBuilder {
 	 * @param value The value supplier to set
 	 */
 	public void setValue(String name, DoubleSupplier value) {
-		getVariable(name).set(value);
+		LazyVariable variable = getVariable(name);
+
+		if (variable != null)
+			variable.set(value);
 	}
 
 	/**

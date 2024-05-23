@@ -1,5 +1,6 @@
 package net.liopyu.example.block.entity;
 
+import net.liopyu.example.client.model.block.FertilizerModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,8 +14,8 @@ import net.liopyu.liolib.core.animation.RawAnimation;
 import net.liopyu.liolib.util.GeckoLibUtil;
 
 /**
- * Example {@link BlockEntity} implementation using a GeckoLib model.
- * @see net.liopyu.example.client.model.block.FertilizerModel
+ * Example {@link BlockEntity} implementation using a LioLib model.
+ * @see FertilizerModel
  * @see FertilizerBlockRenderer
  */
 public class FertilizerBlockEntity extends BlockEntity implements GeoBlockEntity {
@@ -25,7 +26,7 @@ public class FertilizerBlockEntity extends BlockEntity implements GeoBlockEntity
 	private static final RawAnimation BOTARIUM_ANIMS = RawAnimation.begin().thenPlay("botarium.deploy").thenLoop("botarium.idle");
 
 	public FertilizerBlockEntity(BlockPos pos, BlockState state) {
-		super(BlockEntityRegistry.FERTILIZER_BLOCK.get(), pos, state);
+		super(BlockEntityRegistry.FERTILIZER_BLOCK, pos, state);
 	}
 
 	// Let's set our animations up

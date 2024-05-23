@@ -1,22 +1,21 @@
 package net.liopyu.liolib.animatable;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.PacketDistributor;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.network.GeckoLibNetwork;
 import net.liopyu.liolib.network.SerializableDataTicket;
 import net.liopyu.liolib.network.packet.EntityAnimDataSyncPacket;
 import net.liopyu.liolib.network.packet.EntityAnimTriggerPacket;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
- * The {@link GeoAnimatable} interface specific to {@link Entity Entities}.
+ * The {@link GeoAnimatable} interface specific to {@link net.minecraft.world.entity.Entity Entities}.
  * This also applies to Projectiles and other Entity subclasses.<br>
  * <b>NOTE:</b> This <u>cannot</u> be used for entities using the {@link net.liopyu.liolib.renderer.GeoReplacedEntityRenderer}
  * as you aren't extending {@code Entity}. Use {@link GeoReplacedEntity} instead.
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Entity-Animations">GeckoLib Wiki - Entity Animations</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Entity-Animations">LioLib Wiki - Entity Animations</a>
  */
 public interface GeoEntity extends GeoAnimatable {
 	/**
@@ -40,11 +39,12 @@ public interface GeoEntity extends GeoAnimatable {
 	default <D> void setAnimData(SerializableDataTicket<D> dataTicket, D data) {
 		Entity entity = (Entity)this;
 
-		if (entity.level().isClientSide()) {
+		if (entity.getLevel().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(entity.getId()).setData(dataTicket, data);
 		}
 		else {
-			GeckoLibNetwork.send(new EntityAnimDataSyncPacket<>(entity.getId(), dataTicket, data), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity));
+			EntityAnimDataSyncPacket<D> entityAnimDataSyncPacket = new EntityAnimDataSyncPacket<>(entity.getId(), dataTicket, data);
+			GeckoLibNetwork.sendToTrackingEntityAndSelf(entityAnimDataSyncPacket, entity);
 		}
 	}
 
@@ -57,14 +57,15 @@ public interface GeoEntity extends GeoAnimatable {
 	default void triggerAnim(@Nullable String controllerName, String animName) {
 		Entity entity = (Entity)this;
 
-		if (entity.level().isClientSide()) {
+		if (entity.getLevel().isClientSide()) {
 			getAnimatableInstanceCache().getManagerForId(entity.getId()).tryTriggerAnimation(controllerName, animName);
 		}
 		else {
-			GeckoLibNetwork.send(new EntityAnimTriggerPacket<>(entity.getId(), controllerName, animName), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity));
+			EntityAnimTriggerPacket entityAnimTriggerPacket = new EntityAnimTriggerPacket(entity.getId(), controllerName, animName);
+			GeckoLibNetwork.sendToTrackingEntityAndSelf(entityAnimTriggerPacket, entity);
 		}
 	}
-
+	
 	/**
 	 * Returns the current age/tick of the animatable instance.<br>
 	 * By default this is just the animatable's age in ticks, but this method allows for non-ticking custom animatables to provide their own values

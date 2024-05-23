@@ -4,10 +4,10 @@
  */
 package net.liopyu.liolib.core.animatable;
 
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animatable.model.CoreGeoBone;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
+import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 
 /**
  * This is the root interface for all animatable objects in Geckolib.
@@ -22,7 +22,7 @@ import net.liopyu.liolib.core.animation.AnimationController;
 public interface GeoAnimatable {
 	/**
 	 * Register your {@link AnimationController AnimationControllers} and their respective animations and conditions.
-	 * Override this method in your animatable object and add your controllers via {@link AnimatableManager.ControllerRegistrar#add ControllerRegistrar.add}.
+	 * Override this method in your animatable object and add your controllers via {@link net.liopyu.liolib.core.animation.AnimatableManager.ControllerRegistrar#add ControllerRegistrar.add}.
 	 * You may add as many controllers as wanted.
 	 * <br><br>
 	 * Each controller can only play <u>one</u> animation at a time, and so animations that you intend to play concurrently should be handled in independent controllers.
@@ -63,12 +63,4 @@ public interface GeoAnimatable {
 	 * @return The current tick/age of the animatable, for animation purposes
 	 */
 	double getTick(Object object);
-
-	/**
-	 * Override the default handling for instantiating an AnimatableInstanceCache for this animatable.<br>
-	 * Don't override this unless you know what you're doing.
-	 */
-	default AnimatableInstanceCache animatableCacheOverride() {
-		return null;
-	}
 }

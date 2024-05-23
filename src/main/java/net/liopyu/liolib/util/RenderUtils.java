@@ -3,9 +3,12 @@ package net.liopyu.liolib.util;
 import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import it.unimi.dsi.fastutil.ints.IntIntImmutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
+import net.liopyu.liolib.LioLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -21,11 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import net.liopyu.liolib.LioLib;
+import net.liopyu.liolib.animatable.client.RenderProvider;
 import net.liopyu.liolib.cache.object.GeoCube;
 import net.liopyu.liolib.core.animatable.GeoAnimatable;
 import net.liopyu.liolib.core.animatable.model.CoreGeoBone;
@@ -33,8 +32,8 @@ import net.liopyu.liolib.model.GeoModel;
 import net.liopyu.liolib.renderer.GeoArmorRenderer;
 import net.liopyu.liolib.renderer.GeoRenderer;
 import net.liopyu.liolib.renderer.GeoReplacedEntityRenderer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * Helper class for various methods and functions useful while rendering
@@ -46,21 +45,21 @@ public final class RenderUtils {
 
 	public static void rotateMatrixAroundBone(PoseStack poseStack, CoreGeoBone bone) {
 		if (bone.getRotZ() != 0)
-			poseStack.mulPose(Axis.ZP.rotation(bone.getRotZ()));
+			poseStack.mulPose(Vector3f.ZP.rotation(bone.getRotZ()));
 
 		if (bone.getRotY() != 0)
-			poseStack.mulPose(Axis.YP.rotation(bone.getRotY()));
+			poseStack.mulPose(Vector3f.YP.rotation(bone.getRotY()));
 
 		if (bone.getRotX() != 0)
-			poseStack.mulPose(Axis.XP.rotation(bone.getRotX()));
+			poseStack.mulPose(Vector3f.XP.rotation(bone.getRotX()));
 	}
 
 	public static void rotateMatrixAroundCube(PoseStack poseStack, GeoCube cube) {
 		Vec3 rotation = cube.rotation();
 
-		poseStack.mulPose(new Quaternionf().rotationXYZ(0, 0, (float)rotation.z()));
-		poseStack.mulPose(new Quaternionf().rotationXYZ(0, (float)rotation.y(), 0));
-		poseStack.mulPose(new Quaternionf().rotationXYZ((float)rotation.x(), 0, 0));
+		poseStack.mulPose(new Quaternion(0, 0, ((float) rotation.z()), false));
+		poseStack.mulPose(new Quaternion(0, ((float) rotation.y()), 0, false));
+		poseStack.mulPose(new Quaternion(((float) rotation.x()), 0, 0, false));
 	}
 
 	public static void scaleMatrixForBone(PoseStack poseStack, CoreGeoBone bone) {
@@ -98,13 +97,12 @@ public final class RenderUtils {
 		scaleMatrixForBone(poseStack, bone);
 		translateAwayFromPivotPoint(poseStack, bone);
 	}
-
-
+	
 	public static Matrix4f invertAndMultiplyMatrices(Matrix4f baseMatrix, Matrix4f inputMatrix) {
 		inputMatrix = new Matrix4f(inputMatrix);
-
+		
 		inputMatrix.invert();
-		inputMatrix.mul(baseMatrix);
+		inputMatrix.multiply(baseMatrix);
 
 		return inputMatrix;
 	}
@@ -114,18 +112,10 @@ public final class RenderUtils {
      * Usually used for rotating projectiles towards their trajectory, in an {@link GeoRenderer#preRender} override.<br>
 	 */
 	public static void faceRotation(PoseStack poseStack, Entity animatable, float partialTick) {
-		poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) - 90));
-		poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot())));
+		poseStack.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTick, animatable.yRotO, animatable.getYRot()) - 90));
+		poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTick, animatable.xRotO, animatable.getXRot())));
 	}
-
-	/**
-	 * Add a positional vector to a matrix.
-	 * This is specifically implemented to act as a translation of an x/y/z coordinate triplet to a render matrix
-	 */
-	public static Matrix4f translateMatrix(Matrix4f matrix, Vector3f vector) {
-		return matrix.add(new Matrix4f().m30(vector.x).m31(vector.y).m32(vector.z));
-	}
-
+	
 	/**
 	 * Gets the actual dimensions of a texture resource from a given path.<br>
 	 * Not performance-efficient, and should not be relied upon
@@ -206,7 +196,7 @@ public final class RenderUtils {
 
 	/**
 	 * If a {@link GeoCube} is a 2d plane the {@link net.liopyu.liolib.cache.object.GeoQuad Quad's}
-	 * normal is inverted in an intersecting plane, it can cause issues with shaders and other lighting tasks.<br>
+	 * normal is inverted in an intersecting plane,it can cause issues with shaders and other lighting tasks.<br>
 	 * This performs a pseudo-ABS function to help resolve some of those issues.
 	 */
 	public static void fixInvertedFlatCube(GeoCube cube, Vector3f normal) {
@@ -234,7 +224,7 @@ public final class RenderUtils {
 
 	/**
 	 * Gets a {@link GeoModel} instance from a given {@link EntityType}.<br>
-	 * This only works if you're calling this method for an EntityType known to be using a {@link GeoRenderer GeckoLib Renderer}.<br>
+	 * This only works if you're calling this method for an EntityType known to be using a {@link GeoRenderer LioLib Renderer}.<br>
 	 * Generally speaking you probably shouldn't be calling this method at all.
 	 * @param entityType The {@code EntityType} to retrieve the GeoModel for
 	 * @return The GeoModel, or null if one isn't found
@@ -260,7 +250,7 @@ public final class RenderUtils {
 
 	/**
 	 * Gets a {@link GeoModel} instance from a given {@link Entity}.<br>
-	 * This only works if you're calling this method for an Entity known to be using a {@link GeoRenderer GeckoLib Renderer}.<br>
+	 * This only works if you're calling this method for an Entity known to be using a {@link GeoRenderer LioLib Renderer}.<br>
 	 * Generally speaking you probably shouldn't be calling this method at all.
 	 * @param entity The {@code Entity} to retrieve the GeoModel for
 	 * @return The GeoModel, or null if one isn't found
@@ -274,14 +264,14 @@ public final class RenderUtils {
 
 	/**
 	 * Gets a {@link GeoModel} instance from a given {@link Item}.<br>
-	 * This only works if you're calling this method for an Item known to be using a {@link GeoRenderer GeckoLib Renderer}.<br>
+	 * This only works if you're calling this method for an Item known to be using a {@link GeoRenderer LioLib Renderer}.<br>
 	 * Generally speaking you probably shouldn't be calling this method at all.
 	 * @param item The {@code Item} to retrieve the GeoModel for
 	 * @return The GeoModel, or null if one isn't found
 	 */
 	@Nullable
 	public static GeoModel<?> getGeoModelForItem(Item item) {
-		if (IClientItemExtensions.of(item).getCustomRenderer() instanceof GeoRenderer<?> geoRenderer)
+		if(RenderProvider.of(item).getCustomRenderer() instanceof GeoRenderer<?> geoRenderer)
 			return geoRenderer.getGeoModel();
 
 		return null;
@@ -289,7 +279,7 @@ public final class RenderUtils {
 
 	/**
 	 * Gets a {@link GeoModel} instance from a given {@link BlockEntity}.<br>
-	 * This only works if you're calling this method for a BlockEntity known to be using a {@link GeoRenderer GeckoLib Renderer}.<br>
+	 * This only works if you're calling this method for a BlockEntity known to be using a {@link GeoRenderer LioLib Renderer}.<br>
 	 * Generally speaking you probably shouldn't be calling this method at all.
 	 * @param blockEntity The {@code BlockEntity} to retrieve the GeoModel for
 	 * @return The GeoModel, or null if one isn't found
@@ -310,7 +300,7 @@ public final class RenderUtils {
 	 */
 	@Nullable
 	public static GeoModel<?> getGeoModelForArmor(ItemStack stack) {
-		if (IClientItemExtensions.of(stack).getHumanoidArmorModel(null, stack, null, null) instanceof GeoArmorRenderer<?> armorRenderer)
+		if (RenderProvider.of(stack).getHumanoidArmorModel(null, stack, null, null) instanceof GeoArmorRenderer<?> armorRenderer)
 			return armorRenderer.getGeoModel();
 
 		return null;

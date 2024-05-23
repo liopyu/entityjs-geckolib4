@@ -1,11 +1,21 @@
 package net.liopyu.liolib.cache.texture;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+
+import net.liopyu.liolib.LioLib;
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -17,19 +27,11 @@ import net.minecraft.client.resources.metadata.texture.TextureMetadataSection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import org.jetbrains.annotations.Nullable;
-import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.resource.GeoGlowingTextureMeta;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-
 /**
- * Texture object type responsible for GeckoLib's emissive render textures
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Emissive-Textures-Glow-Layer">GeckoLib Wiki - Glow Layers</a>
+ * Texture object type responsible for LioLib's emissive render textures
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Emissive-Textures-Glow-Layer">LioLib Wiki - Glow Layers</a>
  */
 public class AutoGlowingTexture extends GeoAbstractTexture {
 	private static final RenderStateShard.ShaderStateShard SHADER_STATE = new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeEntityTranslucentEmissiveShader);
@@ -117,7 +119,7 @@ public class AutoGlowingTexture extends GeoAbstractTexture {
 			if (glowLayerMeta != null) {
 				glowLayerMeta.createImageMask(baseImage, glowImage);
 
-				if (!FMLEnvironment.production) {
+				if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
 					printDebugImageToDisk(this.textureBase, baseImage);
 					printDebugImageToDisk(this.glowLayer, glowImage);
 				}

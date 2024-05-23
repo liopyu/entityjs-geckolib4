@@ -17,8 +17,8 @@ import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
 import net.liopyu.liolib.core.animation.AnimatableManager;
 import net.liopyu.liolib.core.animation.AnimationController;
 import net.liopyu.liolib.util.GeckoLibUtil;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * Example {@link GeoAnimatable} implementation of an entity
@@ -76,8 +76,8 @@ public class RaceCarEntity extends Animal implements GeoEntity {
 	// Get the controlling passenger
 	@Nullable
 	@Override
-	public LivingEntity getControllingPassenger() {
-		return getFirstPassenger() instanceof LivingEntity entity ? entity : null;
+	public Entity getControllingPassenger() {
+		return getFirstPassenger();
 	}
 
 	@Override
@@ -87,9 +87,11 @@ public class RaceCarEntity extends Animal implements GeoEntity {
 
 	// Adjust the rider's position while riding
 	@Override
-	public void positionRider(Entity entity, MoveFunction moveFunction) {
+	public void positionRider(Entity entity) {
+		super.positionRider(entity);
+
 		if (entity instanceof LivingEntity passenger) {
-			moveFunction.accept(entity, getX(), getY() - 0.1f, getZ());
+			entity.setPos(getX(), getY() - 0.1f, getZ());
 
 			this.xRotO = passenger.xRotO;
 		}

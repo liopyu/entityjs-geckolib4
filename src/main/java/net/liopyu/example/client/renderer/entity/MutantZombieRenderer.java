@@ -2,27 +2,26 @@ package net.liopyu.example.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import net.liopyu.example.entity.DynamicExampleEntity;
+import com.mojang.math.Vector3f;
+import net.liopyu.example.client.model.entity.MutantZombieModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
-import net.liopyu.example.client.model.entity.MutantZombieModel;
+import net.liopyu.example.entity.DynamicExampleEntity;
 import net.liopyu.liolib.LioLib;
 import net.liopyu.liolib.cache.object.BakedGeoModel;
 import net.liopyu.liolib.cache.object.GeoBone;
 import net.liopyu.liolib.renderer.DynamicGeoEntityRenderer;
 import net.liopyu.liolib.renderer.layer.BlockAndItemGeoLayer;
 import net.liopyu.liolib.renderer.layer.ItemArmorGeoLayer;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Example {@link DynamicGeoEntityRenderer} implementation
@@ -69,7 +68,6 @@ public class MutantZombieRenderer extends DynamicGeoEntityRenderer<DynamicExampl
 			}
 
 			// Return the equipment slot relevant to the bone we're using
-			@Nonnull
 			@Override
 			protected EquipmentSlot getEquipmentSlotForBone(GeoBone bone, ItemStack stack, DynamicExampleEntity animatable) {
 				return switch (bone.getName()) {
@@ -84,7 +82,6 @@ public class MutantZombieRenderer extends DynamicGeoEntityRenderer<DynamicExampl
 			}
 
 			// Return the ModelPart responsible for the armor pieces we want to render
-			@Nonnull
 			@Override
 			protected ModelPart getModelPartForBone(GeoBone bone, EquipmentSlot slot, ItemStack stack, DynamicExampleEntity animatable, HumanoidModel<?> baseModel) {
 				return switch (bone.getName()) {
@@ -115,11 +112,11 @@ public class MutantZombieRenderer extends DynamicGeoEntityRenderer<DynamicExampl
 			}
 
 			@Override
-			protected ItemDisplayContext getTransformTypeForStack(GeoBone bone, ItemStack stack, DynamicExampleEntity animatable) {
+			protected TransformType getTransformTypeForStack(GeoBone bone, ItemStack stack, DynamicExampleEntity animatable) {
 				// Apply the camera transform for the given hand
 				return switch (bone.getName()) {
-					case LEFT_HAND, RIGHT_HAND -> ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
-					default -> ItemDisplayContext.NONE;
+					case LEFT_HAND, RIGHT_HAND -> TransformType.THIRD_PERSON_RIGHT_HAND;
+					default -> TransformType.NONE;
 				};
 			}
 
@@ -128,17 +125,17 @@ public class MutantZombieRenderer extends DynamicGeoEntityRenderer<DynamicExampl
 			protected void renderStackForBone(PoseStack poseStack, GeoBone bone, ItemStack stack, DynamicExampleEntity animatable,
 											  MultiBufferSource bufferSource, float partialTick, int packedLight, int packedOverlay) {
 				if (stack == MutantZombieRenderer.this.mainHandItem) {
-					poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+					poseStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
 
 					if (stack.getItem() instanceof ShieldItem)
 						poseStack.translate(0, 0.125, -0.25);
 				}
 				else if (stack == MutantZombieRenderer.this.offhandItem) {
-					poseStack.mulPose(Axis.XP.rotationDegrees(-90f));
+					poseStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
 
 					if (stack.getItem() instanceof ShieldItem) {
 						poseStack.translate(0, 0.125, 0.25);
-						poseStack.mulPose(Axis.YP.rotationDegrees(180));
+						poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
 					}
 				}
 

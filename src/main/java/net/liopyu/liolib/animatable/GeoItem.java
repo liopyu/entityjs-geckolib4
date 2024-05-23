@@ -1,34 +1,44 @@
 package net.liopyu.liolib.animatable;
 
+import com.google.common.base.Suppliers;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import net.liopyu.liolib.cache.AnimatableIdCache;
-import net.liopyu.liolib.constant.DataTickets;
-import net.liopyu.liolib.core.animatable.GeoAnimatable;
-import net.liopyu.liolib.core.animatable.instance.AnimatableInstanceCache;
-import net.liopyu.liolib.core.animatable.instance.SingletonAnimatableInstanceCache;
-import net.liopyu.liolib.core.animation.AnimatableManager;
-import net.liopyu.liolib.core.animation.ContextAwareAnimatableManager;
 import net.liopyu.liolib.util.RenderUtils;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * The {@link net.liopyu.liolib.core.animatable.GeoAnimatable GeoAnimatable} interface specific to {@link net.minecraft.world.item.Item Items}.
  * This also applies to armor, as they are just items too.
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Item-Animations">GeckoLib Wiki - Item Animations</a>
- * @see <a href="https://github.com/bernie-g/geckolib/wiki/Armor-Animations">GeckoLib Wiki - Armor Animations</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Item-Animations">LioLib Wiki - Item Animations</a>
+ * @see <a href="https://github.com/bernie-g/geckolib/wiki/Armor-Animations">LioLib Wiki - Armor Animations</a>
  */
 public interface GeoItem extends SingletonGeoAnimatable {
-	static final String ID_NBT_KEY = "GeckoLibID";
+	String ID_NBT_KEY = "GeckoLibID";
 
 	/**
-	 * Gets the unique identifying number from this ItemStack's {@link Tag NBT},
+	 * Safety wrapper to distance the client-side code from common code.<br>
+	 * This should be cached in your {@link net.minecraft.world.item.Item Item} class
+	 */
+	static Supplier<Object> makeRenderer(GeoItem item) {
+		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
+			return () -> null;
+
+		return Suppliers.memoize(() -> {
+			AtomicReference<Object> renderProvider = new AtomicReference<>();
+			item.createRenderer(renderProvider::set);
+			return renderProvider.get();
+		});
+	}
+
+	/**
+	 * Gets the unique identifying number from this ItemStack's {@link net.minecraft.nbt.Tag NBT},
 	 * or {@link Long#MAX_VALUE} if one hasn't been assigned
 	 */
 	static long getId(ItemStack stack) {
@@ -41,7 +51,7 @@ public interface GeoItem extends SingletonGeoAnimatable {
 	}
 
 	/**
-	 * Gets the unique identifying number from this ItemStack's {@link Tag NBT}.<br>
+	 * Gets the unique identifying number from this ItemStack's {@link net.minecraft.nbt.Tag NBT}.<br>
 	 * If no ID has been reserved for this stack yet, it will reserve a new id and assign it
 	 */
 	static long getOrAssignId(ItemStack stack, ServerLevel level) {
@@ -57,7 +67,7 @@ public interface GeoItem extends SingletonGeoAnimatable {
 
 		return id;
 	}
-
+	
 	/**
 	 * Returns the current age/tick of the animatable instance.<br>
 	 * By default this is just the animatable's age in ticks, but this method allows for non-ticking custom animatables to provide their own values
@@ -67,63 +77,5 @@ public interface GeoItem extends SingletonGeoAnimatable {
 	@Override
 	default double getTick(Object itemStack) {
 		return RenderUtils.getCurrentTick();
-	}
-
-	/**
-	 * Whether this item animatable is perspective aware, handling animations differently depending on the {@link ItemDisplayContext render perspective}
-	 */
-	default boolean isPerspectiveAware() {
-		return false;
-	}
-
-	/**
-	 * Replaces the default AnimatableInstanceCache for GeoItems if {@link GeoItem#isPerspectiveAware()} is true, for perspective-dependent handling
-	 */
-	@Nullable
-	@Override
-	default AnimatableInstanceCache animatableCacheOverride() {
-		if (isPerspectiveAware())
-			return new ContextBasedAnimatableInstanceCache(this);
-
-		return SingletonGeoAnimatable.super.animatableCacheOverride();
-	}
-
-	/**
-	 * AnimatableInstanceCache specific to GeoItems, for doing render perspective based animations
-	 */
-	class ContextBasedAnimatableInstanceCache extends SingletonAnimatableInstanceCache {
-		public ContextBasedAnimatableInstanceCache(GeoAnimatable animatable) {
-			super(animatable);
-		}
-
-		/**
-		 * Gets an {@link AnimatableManager} instance from this cache, cached under the id provided, or a new one if one doesn't already exist.<br>
-		 * This subclass assumes that all animatable instances will be sharing this cache instance, and so differentiates data by ids.
-		 */
-		@Override
-		public AnimatableManager<?> getManagerForId(long uniqueId) {
-			if (!this.managers.containsKey(uniqueId))
-				this.managers.put(uniqueId, new ContextAwareAnimatableManager<GeoItem, ItemDisplayContext>(this.animatable) {
-					@Override
-					protected Map<ItemDisplayContext, AnimatableManager<GeoItem>> buildContextOptions(GeoAnimatable animatable) {
-						Map<ItemDisplayContext, AnimatableManager<GeoItem>> map = new EnumMap<>(ItemDisplayContext.class);
-
-						for (ItemDisplayContext context : ItemDisplayContext.values()) {
-							map.put(context, new AnimatableManager<>(animatable));
-						}
-
-						return map;
-					}
-
-					@Override
-					public ItemDisplayContext getCurrentContext() {
-						ItemDisplayContext context = getData(DataTickets.ITEM_RENDER_PERSPECTIVE);
-
-						return context == null ? ItemDisplayContext.NONE : context;
-					}
-				});
-
-			return this.managers.get(uniqueId);
-		}
 	}
 }

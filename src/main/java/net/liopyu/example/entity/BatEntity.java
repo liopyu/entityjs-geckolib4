@@ -1,5 +1,7 @@
 package net.liopyu.example.entity;
 
+import net.liopyu.example.client.model.entity.BatModel;
+import net.liopyu.example.client.renderer.entity.BatRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,8 +22,8 @@ import net.liopyu.liolib.util.GeckoLibUtil;
 
 /**
  * Example {@link GeoAnimatable} implementation of an entity
- * @see net.liopyu.example.client.renderer.entity.BatRenderer
- * @see net.liopyu.example.client.model.entity.BatModel
+ * @see BatRenderer
+ * @see BatModel
  */
 public class BatEntity extends PathfinderMob implements GeoEntity {
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

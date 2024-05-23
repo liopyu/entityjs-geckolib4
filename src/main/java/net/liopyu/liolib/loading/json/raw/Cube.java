@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.util.GsonHelper;
 import net.liopyu.liolib.util.JsonUtil;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * Container class for cube information, only used in deserialization at startup

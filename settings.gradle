@@ -1,1 +1,14 @@
+
+pluginManagement {
+    repositories {
+
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'liolib-forge-4.0'
