@@ -8,9 +8,9 @@
 		"Gecko, Eliot, AzureDoom, Hydos, DerToaster, Tslat, KyoSleep"
 	],
 	"contact": {
-		"homepage": "https://www.curseforge.com/minecraft/mc-mods/geckolib",
-		"issues": "https://github.com/bernie-g/geckolib/issues",
-		"sources": "https://github.com/bernie-g/geckolib"
+		"homepage": "https://www.curseforge.com/minecraft/mc-mods/liolib",
+		"issues": "https://github.com/liopyu/liolib/issues",
+		"sources": "https://github.com/liopyu/liolib"
 	},
 	"license": "MIT",
 	"icon": "liolib.png",

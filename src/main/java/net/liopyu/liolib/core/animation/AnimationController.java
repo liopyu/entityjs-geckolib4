@@ -41,7 +41,7 @@ public class AnimationController<T extends GeoAnimatable> {
 	protected final Map<String, BoneAnimationQueue> boneAnimationQueues = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, BoneSnapshot> boneSnapshots = new Object2ObjectOpenHashMap<>();
 	protected Queue<AnimationProcessor.QueuedAnimation> animationQueue = new LinkedList<>();
-
+	protected double lastPollTime = -1;
 	protected boolean isJustStarting = false;
 	protected boolean needsAnimationReload = false;
 	protected boolean shouldResetTick = false;
@@ -434,8 +434,9 @@ public class AnimationController<T extends GeoAnimatable> {
 			processCurrentAnimation(adjustedTick, seekTime, crashWhenCantFindBone);
 		}
 		else if (this.animationState == State.TRANSITIONING) {
-			if (adjustedTick == 0 || this.isJustStarting) {
+			if (this.lastPollTime != seekTime && (adjustedTick == 0 || this.isJustStarting)) {
 				this.justStartedTransition = false;
+				this.lastPollTime = seekTime;
 				this.currentAnimation = this.animationQueue.poll();
 
 				resetEventKeyFrames();
