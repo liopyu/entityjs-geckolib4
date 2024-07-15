@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/liopyu/liolib"
 license="MIT"
 [[mods]]
 modId="liolib"
-version="1.20.1-0.0.1"
+version="1.20.1-0.0.2"
 displayName="liolib"
 logoFile="liolib.png"
 credits="Gecko, Eliot, AzureDoom, Chappie, DerToaster, Tslat"
@@ -15,7 +15,7 @@ Liolib is an animation engine for Minecraft Mods, with support for complex 3D ke
 [[dependencies.liolib]]
     modId="forge"
     mandatory=true 
-    versionRange="[47.2,)"
+    versionRange="[47,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.liolib]]
